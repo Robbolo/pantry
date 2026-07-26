@@ -1,0 +1,19 @@
+Generic single-database configuration.
+
+Workflow loop for using alembic to stage and deploy database migrations.
+ 1. Update python model (change SQLAlchemy models in app/models.py )
+ 2. Generate an alembic migration
+    a. uv run alembic revision --autogenerate -m "add message"
+    b. using autogenerate creates a file in backend/alembic/versions/file_with_message.py
+    c. review migration in this file that it does what we expect in the def upgrade() fn
+    d. common gotcha - nullable=False will cause failures on existing data
+3. Apply migration locally
+    a. uv run alembic upgrade head
+    b. use DBeaver to check migration has applied to the postgres db as expected
+4. Commit changes to git
+    a. push changes to model AND the alembic version migration
+    b. then if someone else pulls this down - they can "uv run alembic upgrade head" to update their local db to current version
+
+
+uv run alembic history -> shows previous migrations applied
+uv run alembic downgrade -1 -> rolls back previous migration
