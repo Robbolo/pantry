@@ -5,6 +5,9 @@ class IngredientCreate(BaseModel):
     name: str
     quantity: int
 
+class IngredientUpdate(BaseModel):
+    name: str
+    quantity: int
 
 class IngredientResponse(BaseModel):
     id: int

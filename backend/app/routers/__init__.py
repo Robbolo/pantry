@@ -1,0 +1,1 @@
+from app.routers.ingredients import router as ingredients_router
