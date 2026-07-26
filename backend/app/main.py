@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from app.database import SessionLocal
 from app.models import Ingredient
-from app.schemas import IngredientCreate
+from app.schemas import IngredientCreate, IngredientResponse
 
 app = FastAPI(
     title="Kitchen Inventory API",
@@ -19,22 +19,31 @@ def health_check():
         "status": "ok"
     }
 
-@app.post("/ingredients")
+@app.post("/ingredients", response_model=IngredientResponse)
 def create_ingredient(request: IngredientCreate):
 
-    db = SessionLocal()
+    with SessionLocal() as db:
 
-    ingredient = Ingredient(
-        name=request.name,
-        quantity=request.quantity,
-    )
+        ingredient = Ingredient(
+            name=request.name,
+            quantity=request.quantity,
+        )
 
-    db.add(ingredient)
+        db.add(ingredient)
 
-    db.commit()
+        db.commit()
 
-    db.refresh(ingredient)
+        db.refresh(ingredient)
 
-    db.close()
+        return ingredient
 
-    return ingredient
+@app.get("/ingredients", response_model=list[IngredientResponse])
+def get_ingredients():
+
+    with SessionLocal() as db:
+
+        ingredients = db.scalars(
+            select(Ingredient)
+        ).all()
+
+        return ingredients
