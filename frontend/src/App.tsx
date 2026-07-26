@@ -34,7 +34,8 @@ function App() {
             <IngredientForm
                 onIngredientAdded={loadIngredients}/>
             <IngredientList
-                ingredients={ingredients}/>
+                ingredients={ingredients}
+                onIngredientDeleted={loadIngredients}/>
         </div>
     );
 }
