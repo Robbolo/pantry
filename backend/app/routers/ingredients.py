@@ -98,3 +98,26 @@ def delete_ingredient(
 
     db.delete(ingredient)
     db.commit()
+
+@router.patch("/{ingredient_id}/increment")
+def increment_ingredient(
+    ingredient_id: int,
+    db: Session = Depends(get_db),
+):
+    ingredient = db.get(
+        Ingredient,
+        ingredient_id,
+    )
+
+    if not ingredient:
+        raise HTTPException(
+            status_code=404,
+            detail="Ingredient not found",
+        )
+
+    ingredient.quantity += 1
+
+    db.commit()
+    db.refresh(ingredient)
+
+    return ingredient

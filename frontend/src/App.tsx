@@ -4,6 +4,7 @@ import IngredientList from "./components/IngredientList";
 import IngredientForm from "./components/IngredientForm";
 
 import type { Ingredient } from "./types/ingredients";
+import { getIngredients } from "./api/ingredients";
 
 
 function App() {
@@ -12,14 +13,13 @@ function App() {
         useState<Ingredient[]>([]);
 
 
-    function loadIngredients() {
+  async function loadIngredients() {
 
-        fetch("http://localhost:8000/ingredients")
-            .then(response => response.json())
-            .then(data => {
-                setIngredients(data);
-            });
-    }
+    const data = await getIngredients();
+
+    setIngredients(data);
+
+}
 
     useEffect(() => {
         loadIngredients();
@@ -35,7 +35,7 @@ function App() {
                 onIngredientAdded={loadIngredients}/>
             <IngredientList
                 ingredients={ingredients}
-                onIngredientDeleted={loadIngredients}/>
+                onIngredientChanged={loadIngredients}/>
         </div>
     );
 }

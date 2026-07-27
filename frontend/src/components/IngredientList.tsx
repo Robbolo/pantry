@@ -4,11 +4,11 @@ import IngredientItem from "./IngredientItem";
 
 interface Props {
     ingredients: Ingredient[];
-    onIngredientDeleted: () => void;
+    onIngredientChanged: () => void;
 }
 
 
-function IngredientList({ ingredients,onIngredientDeleted }: Props) {
+function IngredientList({ ingredients,onIngredientChanged }: Props) {
 
     return (
         <div>
@@ -19,7 +19,7 @@ function IngredientList({ ingredients,onIngredientDeleted }: Props) {
                 <IngredientItem
                     key={ingredient.id}
                     ingredient={ingredient}
-                    onIngredientDeleted={onIngredientDeleted}
+                    onIngredientChanged={onIngredientChanged}
                 />
 
                 ))

@@ -5,18 +5,16 @@ import type { Ingredient } from "../types/ingredients";
 
 interface Props {
     ingredient: Ingredient;
-    onIngredientDeleted: () => void;
+    onIngredientChanged: () => void;
 }
-
 
 function IngredientItem({
     ingredient,
-    onIngredientDeleted,
+    onIngredientChanged,
 }: Props) {
 
     const [confirmDelete, setConfirmDelete] =
         useState(false);
-
 
     function handleDelete() {
 
@@ -27,69 +25,61 @@ function IngredientItem({
             }
         )
         .then(() => {
-
             setConfirmDelete(false);
-
-            onIngredientDeleted();
+            onIngredientChanged();
 
         });
 
     }
+    
+    function handleIncrement() {
+
+    fetch(
+        `http://localhost:8000/ingredients/${ingredient.id}/increment`,
+        {
+            method: "PATCH",
+        }
+    )
+    .then(() => {
+        onIngredientChanged();
+    });
+
+}
 
 
     return (
         <div>
-
             <span>
                 {ingredient.name}: {ingredient.quantity}
             </span>
-
-
+            <button
+            onClick={handleIncrement}>+</button>
             {!confirmDelete && (
-
                 <button
                     onClick={() =>
                         setConfirmDelete(true)
-                    }
-                >
-                    ❌
-                </button>
-
+                    }>❌</button>
             )}
-
-
             {confirmDelete && (
-
                 <span>
-
                     <span>
                         Are you sure?
                     </span>
-
-
                     <button
-                        onClick={handleDelete}
-                    >
+                        onClick={handleDelete}>
                         Delete
                     </button>
-
-
                     <button
                         onClick={() =>
                             setConfirmDelete(false)
-                        }
-                    >
-                        Cancel
-                    </button>
-
+                        }>Cancel</button>
                 </span>
-
             )}
-
         </div>
     );
-
 }
+
+
 
 
 export default IngredientItem;
