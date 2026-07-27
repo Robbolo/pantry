@@ -12,3 +12,26 @@ export async function getIngredients() {
     return response.json() as Promise<Ingredient[]>;
 
 }
+
+export async function createIngredient(
+    name: string,
+    quantity: number,
+) {
+
+    await apiFetch(
+        "/ingredients",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify({
+                name,
+                quantity,
+            }),
+        },
+    );
+
+}

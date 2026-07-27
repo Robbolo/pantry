@@ -32,7 +32,7 @@ function App() {
                 My Pantry
             </h1>
             <IngredientForm
-                onIngredientAdded={loadIngredients}/>
+                onIngredientChanged={loadIngredients}/>
             <IngredientList
                 ingredients={ingredients}
                 onIngredientChanged={loadIngredients}/>

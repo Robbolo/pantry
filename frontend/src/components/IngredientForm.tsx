@@ -1,13 +1,13 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
-
+import { createIngredient } from "../api/ingredients";
 
 interface Props {
-    onIngredientAdded: () => void;
+    onIngredientChanged: () => void;
 }
 
 
-function IngredientForm({ onIngredientAdded }: Props) {
+function IngredientForm({ onIngredientChanged }: Props) {
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -15,30 +15,20 @@ function IngredientForm({ onIngredientAdded }: Props) {
     const [quantity, setQuantity] = useState(0);
 
 
-function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-        fetch("http://localhost:8000/ingredients", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                name,
-                quantity,
-            }),
-        })
-        .then(response => response.json())
-        .then(() => {
+    await createIngredient(
+        name,
+        quantity,
+    );
 
-            setName("");
-            setQuantity(0);
+    setName("");
+    setQuantity(0);
 
-            setIsOpen(false);
+    setIsOpen(false);
 
-            onIngredientAdded();
-
-        });
+    onIngredientChanged();
 
     }
 
