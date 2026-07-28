@@ -121,3 +121,26 @@ def increment_ingredient(
     db.refresh(ingredient)
 
     return ingredient
+
+@router.patch("/{ingredient_id}/decrement")
+def decrement_ingredient(
+    ingredient_id: int,
+    db: Session = Depends(get_db),
+):
+    ingredient = db.get(
+        Ingredient,
+        ingredient_id,
+    )
+
+    if not ingredient:
+        raise HTTPException(
+            status_code=404,
+            detail="Ingredient not found",
+        )
+
+    ingredient.quantity -= 1
+
+    db.commit()
+    db.refresh(ingredient)
+
+    return ingredient
