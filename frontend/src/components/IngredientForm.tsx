@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { SubmitEvent } from "react";
+import IngredientEditor from "./IngredientEditor"
 import { createIngredient } from "../api/ingredients";
 
 interface Props {
@@ -10,28 +10,6 @@ interface Props {
 function IngredientForm({ onIngredientChanged }: Props) {
 
     const [isOpen, setIsOpen] = useState(false);
-
-    const [name, setName] = useState("");
-    const [quantity, setQuantity] = useState(0);
-
-
-async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    await createIngredient(
-        name,
-        quantity,
-    );
-
-    setName("");
-    setQuantity(0);
-
-    setIsOpen(false);
-
-    onIngredientChanged();
-
-    }
-
 
     if (!isOpen) {
         return (
@@ -45,52 +23,29 @@ async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
 
 
     return (
-        <form onSubmit={handleSubmit}>
+        <IngredientEditor
 
-            <div>
-                <label>
-                    Name:
-                </label>
+            onSave={async (
+                name,
+                quantity,
+            ) => {
 
-                <input
-                    value={name}
-                    onChange={(event) =>
-                        setName(event.target.value)
-                    }
-                />
-            </div>
+                await createIngredient(
+                    name,
+                    quantity,
+                );
 
+                setIsOpen(false);
 
-            <div>
-                <label>
-                    Quantity:
-                </label>
+                onIngredientChanged();
 
-                <input
-                    type="number"
-                    value={quantity}
-                    onChange={(event) =>
-                        setQuantity(
-                            Number(event.target.value)
-                        )
-                    }
-                />
-            </div>
+            }}
 
+            onCancel={() =>
+                setIsOpen(false)
+            }
 
-            <button type="submit">
-                Save
-            </button>
-
-
-            <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-            >
-                Cancel
-            </button>
-
-        </form>
+        />
     );
 
 }

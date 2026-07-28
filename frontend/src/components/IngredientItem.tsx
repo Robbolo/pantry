@@ -2,7 +2,14 @@ import { useState } from "react";
 
 import type { Ingredient } from "../types/ingredients";
 
-import { deleteIngredient, incrementIngredient, decrementIngredient } from "../api/ingredients";
+import IngredientEditor from "./IngredientEditor";
+
+import {
+    deleteIngredient,
+    incrementIngredient,
+    decrementIngredient,
+    updateIngredient
+    } from "../api/ingredients";
 
 
 interface Props {
@@ -17,6 +24,9 @@ function IngredientItem({
 
     const [confirmDelete, setConfirmDelete] =
         useState(false);
+
+    const [isEditing, setIsEditing] =
+    useState(false);
 
     async function handleDelete() {
 
@@ -59,6 +69,39 @@ function IngredientItem({
             </span>
             <button onClick={handleIncrement}>+</button>
             <button onClick={handleDecrement}>-</button>
+            <button
+                onClick={() => {
+                    setIsEditing(true);
+                }}
+            >
+                ...
+            </button>
+            {
+                isEditing && (
+                    <IngredientEditor
+                        initialName={ingredient.name}
+                        initialQuantity={
+                            ingredient.quantity
+                        }
+                        onSave={async (
+                            name,
+                            quantity,
+                        ) => {
+                            await updateIngredient(
+                                ingredient.id,
+                                name,
+                                quantity,
+                            );
+                            setIsEditing(false);
+
+                            onIngredientChanged();
+                        }}
+                        onCancel={() =>
+                            setIsEditing(false)
+                        }
+                    />
+                )
+            }
             {!confirmDelete && (
                 <button
                     onClick={() =>

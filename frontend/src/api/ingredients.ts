@@ -68,3 +68,27 @@ export async function decrementIngredient(
         },
     );
 }
+
+export async function updateIngredient(
+    id: number,
+    name: string,
+    quantity: number,
+) {
+
+    await apiFetch(
+        `/ingredients/${id}`,
+        {
+            method: "PUT",
+
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify({
+                name,
+                quantity,
+            }),
+        },
+    );
+
+}
