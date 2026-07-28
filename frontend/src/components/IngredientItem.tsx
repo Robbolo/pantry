@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { Ingredient } from "../types/ingredients";
 
-import { deleteIngredient, incrementIngredient } from "../api/ingredients";
+import { deleteIngredient, incrementIngredient, decrementIngredient } from "../api/ingredients";
 
 
 interface Props {
@@ -40,14 +40,25 @@ function IngredientItem({
 
     }
 
+    async function handleDecrement() {
+
+        await decrementIngredient(
+            ingredient.id,
+        );
+
+        onIngredientChanged();
+
+    }
+
+
 
     return (
         <div>
             <span>
                 {ingredient.name}: {ingredient.quantity}
             </span>
-            <button
-            onClick={handleIncrement}>+</button>
+            <button onClick={handleIncrement}>+</button>
+            <button onClick={handleDecrement}>-</button>
             {!confirmDelete && (
                 <button
                     onClick={() =>

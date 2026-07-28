@@ -57,3 +57,14 @@ export async function incrementIngredient(
         },
     );
 }
+
+export async function decrementIngredient(
+    id: number,
+) {
+    await apiFetch(
+        `/ingredients/${id}/decrement`,
+        {
+            method: "PATCH",
+        },
+    );
+}

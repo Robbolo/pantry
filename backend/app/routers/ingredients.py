@@ -25,6 +25,7 @@ def get_ingredients(
 ):
     return db.scalars(
         select(Ingredient)
+        .order_by(Ingredient.id)
     ).all()
 
 @router.post(
