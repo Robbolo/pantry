@@ -35,3 +35,25 @@ export async function createIngredient(
     );
 
 }
+
+export async function deleteIngredient(
+    id: number,
+) {
+    await apiFetch(
+        `/ingredients/${id}`,
+        {
+            method: "DELETE",
+        },
+    );
+}
+
+export async function incrementIngredient(
+    id: number,
+) {
+    await apiFetch(
+        `/ingredients/${id}/increment`,
+        {
+            method: "PATCH",
+        },
+    );
+}

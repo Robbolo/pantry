@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import type { Ingredient } from "../types/ingredients";
 
+import { deleteIngredient, incrementIngredient } from "../api/ingredients";
+
 
 interface Props {
     ingredient: Ingredient;
@@ -16,35 +18,27 @@ function IngredientItem({
     const [confirmDelete, setConfirmDelete] =
         useState(false);
 
-    function handleDelete() {
+    async function handleDelete() {
 
-        fetch(
-            `http://localhost:8000/ingredients/${ingredient.id}`,
-            {
-                method: "DELETE",
-            }
-        )
-        .then(() => {
-            setConfirmDelete(false);
-            onIngredientChanged();
+        await deleteIngredient(
+            ingredient.id,
+        );
 
-        });
+        setConfirmDelete(false);
+
+        onIngredientChanged();
 
     }
     
-    function handleIncrement() {
+    async function handleIncrement() {
 
-    fetch(
-        `http://localhost:8000/ingredients/${ingredient.id}/increment`,
-        {
-            method: "PATCH",
-        }
-    )
-    .then(() => {
+        await incrementIngredient(
+            ingredient.id,
+        );
+
         onIngredientChanged();
-    });
 
-}
+    }
 
 
     return (
