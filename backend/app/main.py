@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import ingredients_router, recipe_router
+from app.routers import pantry_item_router, recipe_router
 
 
 app = FastAPI(
@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(ingredients_router)
+app.include_router(pantry_item_router)
 app.include_router(recipe_router)
 
 

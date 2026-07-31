@@ -1,15 +1,15 @@
 from pydantic import BaseModel
 
 
-class IngredientCreate(BaseModel):
+class PantryItemCreate(BaseModel):
     name: str
     quantity: int
 
-class IngredientUpdate(BaseModel):
+class PantryItemUpdate(BaseModel):
     name: str
     quantity: int
 
-class IngredientResponse(BaseModel):
+class PantryItemResponse(BaseModel):
     id: int
     name: str
     quantity: int
