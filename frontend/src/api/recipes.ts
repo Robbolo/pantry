@@ -18,3 +18,9 @@ export async function createRecipe(name: string): Promise<Recipe> {
     });
     return response.json();
 }
+
+export async function getRecipe(id: number): Promise<Recipe> {
+    const response = await apiFetch(`/recipes/${id}`);
+
+    return response.json();
+}
