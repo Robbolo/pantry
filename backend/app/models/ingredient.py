@@ -22,3 +22,8 @@ class Ingredient(Base):
         "PantryItem",
         back_populates="ingredient",
     )
+
+    recipe_ingredients = relationship(
+    "RecipeIngredient",
+    back_populates="ingredient",
+    )
