@@ -103,3 +103,14 @@ export async function deleteRecipeIngredient(
         },
     );
 }
+
+export async function deleteRecipe(
+    recipeId: number,
+): Promise<void> {
+    await apiFetch(
+        `/recipes/${recipeId}`,
+        {
+            method: "DELETE",
+        },
+    );
+}
