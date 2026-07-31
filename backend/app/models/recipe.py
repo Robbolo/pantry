@@ -26,3 +26,8 @@ class Recipe(Base):
         "User",
         back_populates="recipes",
     )
+
+    recipe_ingredients = relationship(
+    "RecipeIngredient",
+    back_populates="recipe",
+    )
