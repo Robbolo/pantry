@@ -16,10 +16,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(
-    ingredients_router,
-    recipe_router
-)
+app.include_router(ingredients_router)
+app.include_router(recipe_router)
 
 
 @app.get("/health")

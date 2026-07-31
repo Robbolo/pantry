@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
-from backend.app.models import Ingredient
+from app.models import Ingredient
 from app.schemas import (
     IngredientCreate,
     IngredientUpdate,
