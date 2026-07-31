@@ -1,79 +1,44 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
-import { createRecipe, getRecipes } from "../api/recipes";
+import { getRecipes } from "../api/recipes";
 import type { Recipe } from "../types/recipe";
 
+import RecipeForm from "../components/RecipeForm";
+import RecipeList from "../components/RecipeList";
+
+
 function ListRecipes() {
-    const [recipes, setRecipes] = useState<Recipe[]>([]);
-    const [isAdding, setIsAdding] = useState(false);
-    const [name, setName] = useState("");
+    const [recipes, setRecipes] =
+        useState<Recipe[]>([]);
+
 
     async function loadRecipes() {
         const data = await getRecipes();
+
         setRecipes(data);
     }
+
 
     useEffect(() => {
         loadRecipes();
     }, []);
 
-    async function handleCreateRecipe() {
-        if (!name.trim()) {
-            return;
-        }
-
-        await createRecipe(name.trim());
-
-        setName("");
-        setIsAdding(false);
-
-        await loadRecipes();
-    }
 
     return (
         <div>
             <h1>Recipes</h1>
 
-            {!isAdding ? (
-                <button onClick={() => setIsAdding(true)}>
-                    Add Recipe
-                </button>
-            ) : (
-                <div>
-                    <input
-                        type="text"
-                        value={name}
-                        placeholder="Recipe name"
-                        onChange={(event) => setName(event.target.value)}
-                    />
+            <RecipeForm
+                onRecipeChanged={loadRecipes}
+            />
 
-                    <button onClick={handleCreateRecipe}>
-                        Save
-                    </button>
-
-                    <button
-                        onClick={() => {
-                            setName("");
-                            setIsAdding(false);
-                        }}
-                    >
-                        Cancel
-                    </button>
-                </div>
-            )}
-
-            <ul>
-                {recipes.map((recipe) => (
-                    <li key={recipe.id}>
-                        <Link to={`/recipes/${recipe.id}`}>
-                            {recipe.name}
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+            <RecipeList
+                recipes={recipes}
+                onRecipeChanged={loadRecipes}
+            />
         </div>
     );
 }
+
 
 export default ListRecipes;
