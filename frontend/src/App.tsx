@@ -1,43 +1,42 @@
-import { useEffect, useState } from "react";
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+} from "react-router-dom";
 
-import IngredientList from "./components/IngredientList";
-import IngredientForm from "./components/IngredientForm";
+import Navbar from "./components/TopNavbar";
 
-import type { Ingredient } from "./types/ingredients";
-import { getIngredients } from "./api/ingredients";
+import PantryPage from "./pages/PantryPage";
+import RecipesPage from "./pages/RecipePage";
 
 
 function App() {
 
-    const [ingredients, setIngredients] =
-        useState<Ingredient[]>([]);
-
-
-  async function loadIngredients() {
-
-    const data = await getIngredients();
-
-    setIngredients(data);
-
-}
-
-    useEffect(() => {
-        loadIngredients();
-    }, []);
-
-
     return (
-        <div>
-            <h1>
-                My Pantry
-            </h1>
-            <IngredientForm
-                onIngredientChanged={loadIngredients}/>
-            <IngredientList
-                ingredients={ingredients}
-                onIngredientChanged={loadIngredients}/>
-        </div>
+
+        <BrowserRouter>
+
+            <Navbar />
+
+            <Routes>
+
+                <Route
+                    path="/pantry"
+                    element={<PantryPage />}
+                />
+
+
+                <Route
+                    path="/recipes"
+                    element={<RecipesPage />}
+                />
+
+            </Routes>
+
+        </BrowserRouter>
+
     );
+
 }
 
 
