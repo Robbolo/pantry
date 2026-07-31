@@ -1,38 +1,33 @@
 import { apiFetch } from "./clients";
+
 import type { Recipe } from "../types/recipe";
-import type { RecipeDetail } from "../types/recipe_ingredient";
-import type { RecipeIngredient } from "../types/recipe_ingredient";
+import type {
+    RecipeDetail,
+    RecipeIngredient,
+} from "../types/recipe_ingredient";
+
 
 export async function getRecipes(): Promise<Recipe[]> {
     const response = await apiFetch("/recipes");
-    return response.json();
-}
-
-export async function createRecipe(name: string): Promise<Recipe> {
-    const response = await apiFetch("/recipes", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            name,
-        }),
-    });
-    return response.json();
-}
-
-export async function getRecipe(id: number): Promise<Recipe> {
-    const response = await apiFetch(`/recipes/${id}`);
 
     return response.json();
 }
 
 
-export async function getRecipeIngredients(
-    recipeId: number,
-): Promise<RecipeIngredient[]> {
+export async function createRecipe(
+    name: string,
+): Promise<Recipe> {
     const response = await apiFetch(
-        `/recipes/${recipeId}/ingredients`
+        "/recipes",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name,
+            }),
+        },
     );
 
     return response.json();
@@ -48,6 +43,7 @@ export async function getRecipeDetails(
 
     return response.json();
 }
+
 
 export async function addRecipeIngredient(
     recipeId: number,
@@ -69,4 +65,41 @@ export async function addRecipeIngredient(
     );
 
     return response.json();
+}
+
+
+export async function updateRecipeIngredient(
+    recipeId: number,
+    recipeIngredientId: number,
+    name: string,
+    quantityRequired: number,
+): Promise<RecipeIngredient> {
+    const response = await apiFetch(
+        `/recipes/${recipeId}/ingredients/${recipeIngredientId}`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name,
+                quantity_required: quantityRequired,
+            }),
+        },
+    );
+
+    return response.json();
+}
+
+
+export async function deleteRecipeIngredient(
+    recipeId: number,
+    recipeIngredientId: number,
+): Promise<void> {
+    await apiFetch(
+        `/recipes/${recipeId}/ingredients/${recipeIngredientId}`,
+        {
+            method: "DELETE",
+        },
+    );
 }
