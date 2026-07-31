@@ -6,7 +6,7 @@ import type { Ingredient } from "../types/ingredients";
 export async function getIngredients() {
 
     const response = await apiFetch(
-        "/ingredients",
+        "/pantry-items",
     );
 
     return response.json() as Promise<Ingredient[]>;
@@ -19,7 +19,7 @@ export async function createIngredient(
 ) {
 
     await apiFetch(
-        "/ingredients",
+        "/pantry-items",
         {
             method: "POST",
 
@@ -40,7 +40,7 @@ export async function deleteIngredient(
     id: number,
 ) {
     await apiFetch(
-        `/ingredients/${id}`,
+        `/pantry-items/${id}`,
         {
             method: "DELETE",
         },
@@ -51,7 +51,7 @@ export async function incrementIngredient(
     id: number,
 ) {
     await apiFetch(
-        `/ingredients/${id}/increment`,
+        `/pantry-items/${id}/increment`,
         {
             method: "PATCH",
         },
@@ -62,7 +62,7 @@ export async function decrementIngredient(
     id: number,
 ) {
     await apiFetch(
-        `/ingredients/${id}/decrement`,
+        `/pantry-items/${id}/decrement`,
         {
             method: "PATCH",
         },
@@ -76,7 +76,7 @@ export async function updateIngredient(
 ) {
 
     await apiFetch(
-        `/ingredients/${id}`,
+        `/pantry-items/${id}`,
         {
             method: "PUT",
 

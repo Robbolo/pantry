@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db
+from app.dependencies import get_current_user_id, get_db
 from app.models import Recipe
 from app.schemas import (
     RecipeCreate,
@@ -20,11 +20,13 @@ router = APIRouter(
     "",
     response_model=list[RecipeResponse],
 )
-def get_recipe(
+def get_recipes(
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
     return db.scalars(
         select(Recipe)
+        .where(Recipe.user_id == user_id)
         .order_by(Recipe.id)
     ).all()
 
@@ -35,10 +37,11 @@ def get_recipe(
 def create_recipe(
     request: RecipeCreate,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
-
     recipe = Recipe(
         name=request.name,
+        user_id=user_id,
     )
 
     db.add(recipe)
@@ -82,11 +85,13 @@ def update_recipe(
 def delete_recipe(
     recipe_id: int,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
-
-    recipe = db.get(
-        Recipe,
-        recipe_id,
+    recipe = db.scalar(
+        select(Recipe).where(
+            Recipe.id == recipe_id,
+            Recipe.user_id == user_id,
+        )
     )
 
     if recipe is None:
