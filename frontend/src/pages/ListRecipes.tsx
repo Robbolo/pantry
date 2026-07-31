@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { createRecipe, getRecipes } from "../api/recipes";
 import type { Recipe } from "../types/recipe";
 
-function RecipesPage() {
+function ListRecipes() {
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const [isAdding, setIsAdding] = useState(false);
     const [name, setName] = useState("");
@@ -65,7 +66,9 @@ function RecipesPage() {
             <ul>
                 {recipes.map((recipe) => (
                     <li key={recipe.id}>
-                        {recipe.name}
+                        <Link to={`/recipes/${recipe.id}`}>
+                            {recipe.name}
+                        </Link>
                     </li>
                 ))}
             </ul>
@@ -73,4 +76,4 @@ function RecipesPage() {
     );
 }
 
-export default RecipesPage;
+export default ListRecipes;

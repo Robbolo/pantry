@@ -7,7 +7,8 @@ import {
 import Navbar from "./components/TopNavbar";
 
 import PantryPage from "./pages/PantryPage";
-import RecipesPage from "./pages/RecipePage";
+import ListRecipes from "./pages/ListRecipes";
+import RecipeDetailPage from "./pages/RecipeDetailPage";
 
 
 function App() {
@@ -28,7 +29,12 @@ function App() {
 
                 <Route
                     path="/recipes"
-                    element={<RecipesPage />}
+                    element={<ListRecipes />}
+                />
+
+                 <Route
+                    path="/recipes/:recipeId"
+                    element={<RecipeDetailPage />}
                 />
 
             </Routes>
