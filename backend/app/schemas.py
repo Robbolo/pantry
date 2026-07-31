@@ -50,3 +50,8 @@ class RecipeIngredientResponse(BaseModel):
 class RecipeIngredientUpdate(BaseModel):
     name: str
     quantity_required: int
+
+class RecipeDetailResponse(BaseModel):
+    id: int
+    name: str
+    ingredients: list[RecipeIngredientResponse]

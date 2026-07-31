@@ -11,6 +11,7 @@ from app.schemas import (
     RecipeIngredientCreate,
     RecipeIngredientResponse,
     RecipeIngredientUpdate,
+    RecipeDetailResponse,
 )
 
 
@@ -119,7 +120,7 @@ def delete_recipe(
 # GET request to get the ingredients attached to a users given recipe
 @router.get(
     "/{recipe_id}/ingredients",
-    response_model=list[RecipeIngredientResponse],
+    response_model=RecipeDetailResponse,
 )
 def get_recipe_ingredients(
     recipe_id: int,
@@ -147,15 +148,19 @@ def get_recipe_ingredients(
         .order_by(RecipeIngredient.id)
     ).all()
 
-    return [
-        RecipeIngredientResponse(
-            id=item.id,
-            ingredient_id=item.ingredient_id,
-            name=item.ingredient.name,
-            quantity_required=item.quantity_required,
-        )
-        for item in recipe_ingredients
-    ]
+    return RecipeDetailResponse(
+        id=recipe.id,
+        name=recipe.name,
+        ingredients=[
+            RecipeIngredientResponse(
+                id=item.id,
+                ingredient_id=item.ingredient_id,
+                name=item.ingredient.name,
+                quantity_required=item.quantity_required,
+            )
+            for item in recipe_ingredients
+        ],
+    )
 
 # POST request to add an ingredient to a user's given recipe
 @router.post(
@@ -316,3 +321,27 @@ def delete_recipe_ingredient(
 
     db.delete(recipe_ingredient)
     db.commit()
+
+@router.get(
+    "/{recipe_id}",
+    response_model=RecipeResponse,
+)
+def get_recipe(
+    recipe_id: int,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
+):
+    recipe = db.scalar(
+        select(Recipe).where(
+            Recipe.id == recipe_id,
+            Recipe.user_id == user_id,
+        )
+    )
+
+    if recipe is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Recipe not found",
+        )
+
+    return recipe
