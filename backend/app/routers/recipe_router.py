@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.dependencies import get_current_user_id, get_db
-from app.models import Recipe, RecipeIngredient, Ingredient
+from app.models import Recipe, RecipeIngredient, Ingredient, PantryItem
 from app.schemas import (
     RecipeCreate,
     RecipeUpdate,
@@ -12,6 +12,9 @@ from app.schemas import (
     RecipeIngredientResponse,
     RecipeIngredientUpdate,
     RecipeDetailResponse,
+    RecipeAvailabilityResponse,
+    RecipeIngredientAvailabilityResponse,
+    IngredientAvailabilityStatus,
 )
 
 
@@ -23,17 +26,86 @@ router = APIRouter(
 # GET request to return all current user's recipes
 @router.get(
     "",
-    response_model=list[RecipeResponse],
+    response_model=list[RecipeAvailabilityResponse],
 )
 def get_recipes(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id),
 ):
-    return db.scalars(
+    recipes = db.scalars(
         select(Recipe)
+        .options(
+            selectinload(Recipe.recipe_ingredients)
+            .selectinload(RecipeIngredient.ingredient)
+        )
         .where(Recipe.user_id == user_id)
         .order_by(Recipe.id)
     ).all()
+
+    pantry_items = db.scalars(
+        select(PantryItem).where(
+            PantryItem.user_id == user_id
+        )
+    ).all()
+
+    pantry_quantities = {
+        item.ingredient_id: item.quantity
+        for item in pantry_items
+    }
+
+    response: list[RecipeAvailabilityResponse] = []
+
+    for recipe in recipes:
+        ingredient_availability = []
+
+        for requirement in recipe.recipe_ingredients:
+            quantity_in_pantry = pantry_quantities.get(
+                requirement.ingredient_id,
+                0,
+            )
+
+            if quantity_in_pantry == 0:
+                status = IngredientAvailabilityStatus.missing
+            elif quantity_in_pantry < requirement.quantity_required:
+                status = IngredientAvailabilityStatus.insufficient
+            else:
+                status = IngredientAvailabilityStatus.enough
+
+            ingredient_availability.append(
+                RecipeIngredientAvailabilityResponse(
+                    recipe_ingredient_id=requirement.id,
+                    ingredient_id=requirement.ingredient_id,
+                    name=requirement.ingredient.name,
+                    quantity_required=requirement.quantity_required,
+                    quantity_in_pantry=quantity_in_pantry,
+                    status=status,
+                )
+            )
+
+        ingredients_available = sum(
+            item.status == IngredientAvailabilityStatus.enough
+            for item in ingredient_availability
+        )
+
+        ingredients_required = len(
+            ingredient_availability
+        )
+
+        response.append(
+            RecipeAvailabilityResponse(
+                id=recipe.id,
+                name=recipe.name,
+                ingredients_available=ingredients_available,
+                ingredients_required=ingredients_required,
+                can_make=(
+                    ingredients_required > 0
+                    and ingredients_available == ingredients_required
+                ),
+                ingredients=ingredient_availability,
+            )
+        )
+
+    return response
 
 # POST request to make a new named recipe for a user
 @router.post(
