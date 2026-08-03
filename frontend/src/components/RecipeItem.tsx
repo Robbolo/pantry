@@ -20,6 +20,16 @@ function RecipeItem({
     onRecipeChanged,
 }: Props) {
 
+    const availabilityPercentage =
+    recipe.ingredients_required === 0
+        ? 0
+        : Math.round(
+            (
+                recipe.ingredients_available
+                / recipe.ingredients_required
+            ) * 100
+        );
+
     const [confirmDelete, setConfirmDelete] =
         useState(false);
 
@@ -56,6 +66,7 @@ function RecipeItem({
 
 
     return (
+    <div>
         <div>
             {!isEditing ? (
                 <>
@@ -126,7 +137,39 @@ function RecipeItem({
                 </span>
             )}
         </div>
-    );
+
+        <div>
+            <span>
+                {recipe.ingredients_available}
+                {" / "}
+                {recipe.ingredients_required}
+                {" ingredients available"}
+            </span>
+
+            <progress
+                value={recipe.ingredients_available}
+                max={Math.max(
+                    recipe.ingredients_required,
+                    1,
+                )}
+            />
+
+            <span>
+                {availabilityPercentage}%
+            </span>
+
+            <span>
+                {
+                    recipe.ingredients_required === 0
+                        ? "No ingredients added"
+                        : recipe.can_make
+                            ? "Ready to make"
+                            : "Ingredients needed"
+                }
+            </span>
+        </div>
+    </div>
+);
 }
 
 
