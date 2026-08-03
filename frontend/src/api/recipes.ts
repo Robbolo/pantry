@@ -104,6 +104,26 @@ export async function deleteRecipeIngredient(
     );
 }
 
+export async function updateRecipe(
+    recipeId: number,
+    name: string,
+): Promise<Recipe> {
+    const response = await apiFetch(
+        `/recipes/${recipeId}`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name,
+            }),
+        },
+    );
+
+    return response.json();
+}
+
 export async function deleteRecipe(
     recipeId: number,
 ): Promise<void> {

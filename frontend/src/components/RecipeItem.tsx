@@ -2,7 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import type { Recipe } from "../types/recipe";
-import { deleteRecipe } from "../api/recipes";
+
+import {
+    deleteRecipe,
+    updateRecipe,
+} from "../api/recipes";
 
 
 interface Props {
@@ -19,11 +23,15 @@ function RecipeItem({
     const [confirmDelete, setConfirmDelete] =
         useState(false);
 
+    const [isEditing, setIsEditing] =
+        useState(false);
+
+    const [name, setName] =
+        useState(recipe.name);
+
 
     async function handleDelete() {
-        await deleteRecipe(
-            recipe.id,
-        );
+        await deleteRecipe(recipe.id);
 
         setConfirmDelete(false);
 
@@ -31,11 +39,62 @@ function RecipeItem({
     }
 
 
+    async function handleUpdate() {
+        if (!name.trim()) {
+            return;
+        }
+
+        await updateRecipe(
+            recipe.id,
+            name.trim(),
+        );
+
+        setIsEditing(false);
+
+        onRecipeChanged();
+    }
+
+
     return (
         <div>
-            <Link to={`/recipes/${recipe.id}`}>
-                {recipe.name}
-            </Link>
+            {!isEditing ? (
+                <>
+                    <Link to={`/recipes/${recipe.id}`}>
+                        {recipe.name}
+                    </Link>
+
+                    <button
+                        onClick={() =>
+                            setIsEditing(true)
+                        }
+                    >
+                        ...
+                    </button>
+                </>
+            ) : (
+                <>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(event) =>
+                            setName(event.target.value)
+                        }
+                    />
+
+                    <button onClick={handleUpdate}>
+                        Save
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            setName(recipe.name);
+                            setIsEditing(false);
+                        }}
+                    >
+                        Cancel
+                    </button>
+                </>
+            )}
 
             {!confirmDelete && (
                 <button
@@ -53,9 +112,7 @@ function RecipeItem({
                         Are you sure?
                     </span>
 
-                    <button
-                        onClick={handleDelete}
-                    >
+                    <button onClick={handleDelete}>
                         Delete
                     </button>
 
