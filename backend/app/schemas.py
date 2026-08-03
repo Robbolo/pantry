@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from enum import Enum
 
 
 class PantryItemCreate(BaseModel):
@@ -55,3 +56,28 @@ class RecipeDetailResponse(BaseModel):
     id: int
     name: str
     ingredients: list[RecipeIngredientResponse]
+
+## Schema for pantry satifaction of specific recipe
+
+class IngredientAvailabilityStatus(str, Enum):
+    enough = "enough"
+    insufficient = "insufficient"
+    missing = "missing"
+
+
+class RecipeIngredientAvailabilityResponse(BaseModel):
+    recipe_ingredient_id: int
+    ingredient_id: int
+    name: str
+    quantity_required: int
+    quantity_in_pantry: int
+    status: IngredientAvailabilityStatus
+
+
+class RecipeAvailabilityResponse(BaseModel):
+    id: int
+    name: str
+    ingredients_available: int
+    ingredients_required: int
+    can_make: bool
+    ingredients: list[RecipeIngredientAvailabilityResponse]
