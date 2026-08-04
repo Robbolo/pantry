@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.dependencies import get_current_user_id, get_db
+from app.unit_conversion import units_are_compatible, convert_to_base_unit
 from app.models import Recipe, RecipeIngredient, Ingredient, PantryItem
 from app.schemas import (
     RecipeCreate,
@@ -48,8 +49,8 @@ def get_recipes(
         )
     ).all()
 
-    pantry_quantities = {
-        item.ingredient_id: item.quantity
+    pantry_items_by_ingredient = {
+        item.ingredient_id: item
         for item in pantry_items
     }
 
@@ -59,32 +60,71 @@ def get_recipes(
         ingredient_availability = []
 
         for requirement in recipe.recipe_ingredients:
-            quantity_in_pantry = pantry_quantities.get(
-                requirement.ingredient_id,
-                0,
+            pantry_item = pantry_items_by_ingredient.get(
+                requirement.ingredient_id
             )
 
-            if quantity_in_pantry == 0:
+            if pantry_item is None:
+                quantity_in_pantry = 0
+                pantry_unit = None
                 status = IngredientAvailabilityStatus.missing
-            elif quantity_in_pantry < requirement.quantity_required:
-                status = IngredientAvailabilityStatus.insufficient
+
             else:
-                status = IngredientAvailabilityStatus.enough
+                quantity_in_pantry = pantry_item.quantity
+                pantry_unit = pantry_item.unit
+
+                if quantity_in_pantry == 0:
+                    status = IngredientAvailabilityStatus.missing
+
+                elif not units_are_compatible(
+                    pantry_item.unit,
+                    requirement.unit,
+                ):
+                    status = (
+                        IngredientAvailabilityStatus.incompatible
+                    )
+
+                else:
+                    pantry_quantity_base = convert_to_base_unit(
+                        pantry_item.quantity,
+                        pantry_item.unit,
+                    )
+
+                    required_quantity_base = convert_to_base_unit(
+                        requirement.quantity_required,
+                        requirement.unit,
+                    )
+
+                    if (
+                        pantry_quantity_base
+                        < required_quantity_base
+                    ):
+                        status = (
+                            IngredientAvailabilityStatus.insufficient
+                        )
+                    else:
+                        status = (
+                            IngredientAvailabilityStatus.enough
+                        )
 
             ingredient_availability.append(
                 RecipeIngredientAvailabilityResponse(
                     recipe_ingredient_id=requirement.id,
                     ingredient_id=requirement.ingredient_id,
                     name=requirement.ingredient.name,
-                    quantity_required=requirement.quantity_required,
+                    quantity_required=(
+                        requirement.quantity_required
+                    ),
+                    required_unit=requirement.unit,
                     quantity_in_pantry=quantity_in_pantry,
-                    unit=requirement.ingredient.unit,
+                    pantry_unit=pantry_unit,
                     status=status,
                 )
             )
 
         ingredients_available = sum(
-            item.status == IngredientAvailabilityStatus.enough
+            item.status
+            == IngredientAvailabilityStatus.enough
             for item in ingredient_availability
         )
 
@@ -100,7 +140,8 @@ def get_recipes(
                 ingredients_required=ingredients_required,
                 can_make=(
                     ingredients_required > 0
-                    and ingredients_available == ingredients_required
+                    and ingredients_available
+                    == ingredients_required
                 ),
                 ingredients=ingredient_availability,
             )
@@ -230,7 +271,7 @@ def get_recipe_ingredients(
                 ingredient_id=item.ingredient_id,
                 name=item.ingredient.name,
                 quantity_required=item.quantity_required,
-                unit=item.ingredient.unit,
+                unit=item.unit,
             )
             for item in recipe_ingredients
         ],

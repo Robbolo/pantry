@@ -75,15 +75,20 @@ class IngredientAvailabilityStatus(str, Enum):
     enough = "enough"
     insufficient = "insufficient"
     missing = "missing"
+    incompatible = "incompatible"
 
 
 class RecipeIngredientAvailabilityResponse(BaseModel):
     recipe_ingredient_id: int
     ingredient_id: int
     name: str
+
     quantity_required: int
+    required_unit: Unit
+
     quantity_in_pantry: int
-    unit: Unit
+    pantry_unit: Unit | None
+
     status: IngredientAvailabilityStatus
 
 
