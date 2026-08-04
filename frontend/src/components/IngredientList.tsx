@@ -1,4 +1,5 @@
 import type { Ingredient } from "../types/ingredients";
+
 import IngredientItem from "./IngredientItem";
 
 
@@ -8,27 +9,23 @@ interface Props {
 }
 
 
-function IngredientList({ ingredients,onIngredientChanged }: Props) {
-
+function IngredientList({
+    ingredients,
+    onIngredientChanged,
+}: Props) {
     return (
         <div>
-
-            {
-                ingredients.map((ingredient) => (
-
+            {ingredients.map((ingredient) => (
                 <IngredientItem
                     key={ingredient.id}
                     ingredient={ingredient}
-                    onIngredientChanged={onIngredientChanged}
+                    onIngredientChanged={
+                        onIngredientChanged
+                    }
                 />
-
-                ))
-            }
-
+            ))}
         </div>
     );
-
 }
-
 
 export default IngredientList;

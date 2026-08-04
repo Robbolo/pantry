@@ -1,5 +1,5 @@
 import { useState } from "react";
-import IngredientEditor from "./IngredientEditor"
+import IngredientEditor from "./IngredientEditor";
 import { createIngredient } from "../api/ingredients";
 
 interface Props {
@@ -28,11 +28,13 @@ function IngredientForm({ onIngredientChanged }: Props) {
             onSave={async (
                 name,
                 quantity,
+                unit,
             ) => {
 
                 await createIngredient(
                     name,
                     quantity,
+                    unit,
                 );
 
                 setIsOpen(false);

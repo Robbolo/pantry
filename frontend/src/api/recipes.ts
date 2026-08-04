@@ -5,6 +5,7 @@ import type {
     RecipeDetail,
     RecipeIngredient,
 } from "../types/recipe_ingredient";
+import type { Unit } from "../types/ingredients";
 
 
 export async function getRecipes(): Promise<Recipe[]> {
@@ -49,6 +50,7 @@ export async function addRecipeIngredient(
     recipeId: number,
     name: string,
     quantityRequired: number,
+    unit: Unit,
 ): Promise<RecipeIngredient> {
     const response = await apiFetch(
         `/recipes/${recipeId}/ingredients`,
@@ -60,6 +62,7 @@ export async function addRecipeIngredient(
             body: JSON.stringify({
                 name,
                 quantity_required: quantityRequired,
+                unit,
             }),
         },
     );
@@ -73,6 +76,7 @@ export async function updateRecipeIngredient(
     recipeIngredientId: number,
     name: string,
     quantityRequired: number,
+    unit: Unit,
 ): Promise<RecipeIngredient> {
     const response = await apiFetch(
         `/recipes/${recipeId}/ingredients/${recipeIngredientId}`,
@@ -84,6 +88,7 @@ export async function updateRecipeIngredient(
             body: JSON.stringify({
                 name,
                 quantity_required: quantityRequired,
+                unit,
             }),
         },
     );
@@ -104,6 +109,7 @@ export async function deleteRecipeIngredient(
     );
 }
 
+
 export async function updateRecipe(
     recipeId: number,
     name: string,
@@ -123,6 +129,7 @@ export async function updateRecipe(
 
     return response.json();
 }
+
 
 export async function deleteRecipe(
     recipeId: number,
