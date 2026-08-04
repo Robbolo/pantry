@@ -1,3 +1,5 @@
+import type { Unit } from "./ingredients";
+
 export type IngredientAvailabilityStatus =
     | "enough"
     | "insufficient"
@@ -10,6 +12,7 @@ export interface RecipeIngredientAvailability {
     name: string;
     quantity_required: number;
     quantity_in_pantry: number;
+    unit: Unit;
     status: IngredientAvailabilityStatus;
 }
 
