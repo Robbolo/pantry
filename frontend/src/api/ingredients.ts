@@ -1,23 +1,25 @@
 import { apiFetch } from "./clients";
 
-import type { Ingredient } from "../types/ingredients";
+import type {
+    Ingredient,
+    Unit,
+} from "../types/ingredients";
 
 
 export async function getIngredients() {
-
     const response = await apiFetch(
         "/pantry-items",
     );
 
     return response.json() as Promise<Ingredient[]>;
-
 }
+
 
 export async function createIngredient(
     name: string,
     quantity: number,
+    unit: Unit,
 ) {
-
     await apiFetch(
         "/pantry-items",
         {
@@ -30,11 +32,12 @@ export async function createIngredient(
             body: JSON.stringify({
                 name,
                 quantity,
+                unit,
             }),
         },
     );
-
 }
+
 
 export async function deleteIngredient(
     id: number,
@@ -47,6 +50,7 @@ export async function deleteIngredient(
     );
 }
 
+
 export async function incrementIngredient(
     id: number,
 ) {
@@ -57,6 +61,7 @@ export async function incrementIngredient(
         },
     );
 }
+
 
 export async function decrementIngredient(
     id: number,
@@ -69,12 +74,13 @@ export async function decrementIngredient(
     );
 }
 
+
 export async function updateIngredient(
     id: number,
     name: string,
     quantity: number,
+    unit: Unit,
 ) {
-
     await apiFetch(
         `/pantry-items/${id}`,
         {
@@ -87,8 +93,8 @@ export async function updateIngredient(
             body: JSON.stringify({
                 name,
                 quantity,
+                unit,
             }),
         },
     );
-
 }
