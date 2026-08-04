@@ -18,6 +18,11 @@ class Ingredient(Base):
         unique=True,
     )
 
+    unit: Mapped[str] = mapped_column(
+    String(50),
+    nullable=False,
+    )
+
     pantry_items = relationship(
         "PantryItem",
         back_populates="ingredient",
@@ -27,3 +32,4 @@ class Ingredient(Base):
     "RecipeIngredient",
     back_populates="ingredient",
     )
+
