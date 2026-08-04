@@ -24,15 +24,18 @@ def get_pantry_items(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id),
 ):
-
     pantry_items = db.scalars(
-        select(PantryItem).where(PantryItem.user_id == user_id).order_by(PantryItem.id)
+        select(PantryItem)
+        .where(PantryItem.user_id == user_id)
+        .order_by(PantryItem.id)
     ).all()
 
     return [
         PantryItemResponse(
             id=item.id,
-            name=item.ingredient.name, quantity=item.quantity
+            name=item.ingredient.name,
+            quantity=item.quantity,
+            unit=item.ingredient.unit,
         )
         for item in pantry_items
     ]

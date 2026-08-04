@@ -78,6 +78,7 @@ def get_recipes(
                     name=requirement.ingredient.name,
                     quantity_required=requirement.quantity_required,
                     quantity_in_pantry=quantity_in_pantry,
+                    unit=requirement.ingredient.unit,
                     status=status,
                 )
             )
@@ -229,6 +230,7 @@ def get_recipe_ingredients(
                 ingredient_id=item.ingredient_id,
                 name=item.ingredient.name,
                 quantity_required=item.quantity_required,
+                unit=item.ingredient.unit,
             )
             for item in recipe_ingredients
         ],
