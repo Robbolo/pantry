@@ -269,25 +269,16 @@ def add_recipe_ingredient(
     if ingredient is None:
         ingredient = Ingredient(
             name=request.name,
-            unit=request.unit.value,
         )
 
         db.add(ingredient)
         db.flush()
 
-    elif ingredient.unit != request.unit.value:
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                f"{ingredient.name} already uses "
-                f"the unit '{ingredient.unit}'"
-            ),
-        )
-
     recipe_ingredient = RecipeIngredient(
         recipe_id=recipe_id,
         ingredient_id=ingredient.id,
         quantity_required=request.quantity_required,
+        unit=request.unit.value,
     )
 
     db.add(recipe_ingredient)
@@ -299,7 +290,7 @@ def add_recipe_ingredient(
         ingredient_id=recipe_ingredient.ingredient_id,
         name=ingredient.name,
         quantity_required=recipe_ingredient.quantity_required,
-        unit=ingredient.unit,
+        unit=recipe_ingredient.unit,
     )
 
 # PUT request to update an ingredient quantity in a user's given recipe
@@ -349,25 +340,16 @@ def update_recipe_ingredient(
     if ingredient is None:
         ingredient = Ingredient(
             name=request.name,
-            unit=request.unit.value,
         )
 
         db.add(ingredient)
         db.flush()
 
-    elif ingredient.unit != request.unit.value:
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                f"{ingredient.name} already uses "
-                f"the unit '{ingredient.unit}'"
-            ),
-        )
-
     recipe_ingredient.ingredient_id = ingredient.id
     recipe_ingredient.quantity_required = (
         request.quantity_required
     )
+    recipe_ingredient.unit = request.unit.value
 
     db.commit()
     db.refresh(recipe_ingredient)
@@ -377,7 +359,7 @@ def update_recipe_ingredient(
         ingredient_id=recipe_ingredient.ingredient_id,
         name=ingredient.name,
         quantity_required=recipe_ingredient.quantity_required,
-        unit=ingredient.unit,
+        unit=recipe_ingredient.unit,
     )
 
 # DELETE request to remove an ingredient from a user's given recipe

@@ -59,25 +59,16 @@ def create_pantry_item(
     if ingredient is None:
         ingredient = Ingredient(
             name=request.name,
-            unit=request.unit.value,
         )
 
         db.add(ingredient)
         db.flush()
 
-    elif ingredient.unit != request.unit.value:
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                f"{ingredient.name} already uses "
-                f"the unit '{ingredient.unit}'"
-            ),
-        )
-
     pantry_item = PantryItem(
         user_id=user_id,
         ingredient_id=ingredient.id,
         quantity=request.quantity,
+        unit=request.unit.value,
     )
 
     db.add(pantry_item)
@@ -88,7 +79,7 @@ def create_pantry_item(
         id=pantry_item.id,
         name=ingredient.name,
         quantity=pantry_item.quantity,
-        unit=ingredient.unit,
+        unit=pantry_item.unit,
     )
 
 
@@ -124,23 +115,14 @@ def update_pantry_item(
     if ingredient is None:
         ingredient = Ingredient(
             name=request.name,
-            unit=request.unit.value,
         )
 
         db.add(ingredient)
         db.flush()
 
-    elif ingredient.unit != request.unit.value:
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                f"{ingredient.name} already uses "
-                f"the unit '{ingredient.unit}'"
-            ),
-        )
-
     pantry_item.ingredient_id = ingredient.id
     pantry_item.quantity = request.quantity
+    pantry_item.unit = request.unit.value
 
     db.commit()
     db.refresh(pantry_item)
@@ -149,7 +131,7 @@ def update_pantry_item(
         id=pantry_item.id,
         name=ingredient.name,
         quantity=pantry_item.quantity,
-        unit=ingredient.unit,
+        unit=pantry_item.unit,
     )
 
 
