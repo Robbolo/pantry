@@ -1,19 +1,28 @@
 from pydantic import BaseModel
 from enum import Enum
 
+class Unit(str, Enum):
+    each = "each"
+    grams = "g"
+    kilograms = "kg"
+    millilitres = "ml"
+    litres = "l"
 
 class PantryItemCreate(BaseModel):
     name: str
     quantity: int
+    unit: Unit
 
 class PantryItemUpdate(BaseModel):
     name: str
     quantity: int
+    unit: Unit
 
 class PantryItemResponse(BaseModel):
     id: int
     name: str
     quantity: int
+    unit: Unit
 
     model_config = {
         "from_attributes": True
@@ -36,6 +45,7 @@ class RecipeResponse(BaseModel):
 class RecipeIngredientCreate(BaseModel):
     name: str
     quantity_required: int
+    unit: Unit
 
 
 class RecipeIngredientResponse(BaseModel):
@@ -43,6 +53,7 @@ class RecipeIngredientResponse(BaseModel):
     ingredient_id: int
     name: str
     quantity_required: int
+    unit: Unit
 
     model_config = {
         "from_attributes": True
@@ -51,6 +62,7 @@ class RecipeIngredientResponse(BaseModel):
 class RecipeIngredientUpdate(BaseModel):
     name: str
     quantity_required: int
+    unit: Unit
 
 class RecipeDetailResponse(BaseModel):
     id: int
@@ -71,6 +83,7 @@ class RecipeIngredientAvailabilityResponse(BaseModel):
     name: str
     quantity_required: int
     quantity_in_pantry: int
+    unit: Unit
     status: IngredientAvailabilityStatus
 
 
