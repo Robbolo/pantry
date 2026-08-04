@@ -22,7 +22,6 @@ function RecipeIngredientItem({
     ingredient,
     onIngredientChanged,
 }: Props) {
-
     const [confirmDelete, setConfirmDelete] =
         useState(false);
 
@@ -31,14 +30,12 @@ function RecipeIngredientItem({
 
 
     async function handleDelete() {
-
         await deleteRecipeIngredient(
             recipeId,
             ingredient.id,
         );
 
         setConfirmDelete(false);
-
         onIngredientChanged();
     }
 
@@ -46,7 +43,11 @@ function RecipeIngredientItem({
     return (
         <div>
             <span>
-                {ingredient.name}: {ingredient.quantity_required}
+                {ingredient.name}
+                {": "}
+                {ingredient.quantity_required}
+                {" "}
+                {ingredient.unit}
             </span>
 
             <button
@@ -57,35 +58,34 @@ function RecipeIngredientItem({
                 ...
             </button>
 
-            {
-                isEditing && (
-                    <RecipeIngredientEditor
-                        initialName={ingredient.name}
-                        initialQuantityRequired={
-                            ingredient.quantity_required
-                        }
-                        onSave={async (
+            {isEditing && (
+                <RecipeIngredientEditor
+                    initialName={ingredient.name}
+                    initialQuantityRequired={
+                        ingredient.quantity_required
+                    }
+                    initialUnit={ingredient.unit}
+                    onSave={async (
+                        name,
+                        quantityRequired,
+                        unit,
+                    ) => {
+                        await updateRecipeIngredient(
+                            recipeId,
+                            ingredient.id,
                             name,
                             quantityRequired,
-                        ) => {
+                            unit,
+                        );
 
-                            await updateRecipeIngredient(
-                                recipeId,
-                                ingredient.id,
-                                name,
-                                quantityRequired,
-                            );
-
-                            setIsEditing(false);
-
-                            onIngredientChanged();
-                        }}
-                        onCancel={() =>
-                            setIsEditing(false)
-                        }
-                    />
-                )
-            }
+                        setIsEditing(false);
+                        onIngredientChanged();
+                    }}
+                    onCancel={() =>
+                        setIsEditing(false)
+                    }
+                />
+            )}
 
             {!confirmDelete && (
                 <button
@@ -103,9 +103,7 @@ function RecipeIngredientItem({
                         Are you sure?
                     </span>
 
-                    <button
-                        onClick={handleDelete}
-                    >
+                    <button onClick={handleDelete}>
                         Delete
                     </button>
 

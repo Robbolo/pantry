@@ -1,14 +1,18 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
 
+import type { Unit } from "../types/ingredients";
+
 
 interface Props {
     initialName?: string;
     initialQuantityRequired?: number;
+    initialUnit?: Unit;
 
     onSave: (
         name: string,
         quantityRequired: number,
+        unit: Unit,
     ) => Promise<void>;
 
     onCancel?: () => void;
@@ -18,15 +22,18 @@ interface Props {
 function RecipeIngredientEditor({
     initialName = "",
     initialQuantityRequired = 0,
+    initialUnit = "each",
     onSave,
     onCancel,
 }: Props) {
-
     const [name, setName] =
         useState(initialName);
 
     const [quantityRequired, setQuantityRequired] =
         useState(initialQuantityRequired);
+
+    const [unit, setUnit] =
+        useState<Unit>(initialUnit);
 
 
     async function handleSubmit(
@@ -37,6 +44,7 @@ function RecipeIngredientEditor({
         await onSave(
             name,
             quantityRequired,
+            unit,
         );
     }
 
@@ -47,6 +55,7 @@ function RecipeIngredientEditor({
                 <label>
                     Name
                 </label>
+
                 <input
                     value={name}
                     onChange={(event) =>
@@ -61,6 +70,7 @@ function RecipeIngredientEditor({
                 <label>
                     Quantity Required
                 </label>
+
                 <input
                     type="number"
                     value={quantityRequired}
@@ -71,6 +81,41 @@ function RecipeIngredientEditor({
                         )
                     }
                 />
+            </div>
+
+            <div>
+                <label>
+                    Unit
+                </label>
+
+                <select
+                    value={unit}
+                    onChange={(event) =>
+                        setUnit(
+                            event.target.value as Unit
+                        )
+                    }
+                >
+                    <option value="each">
+                        Each
+                    </option>
+
+                    <option value="g">
+                        Grams
+                    </option>
+
+                    <option value="kg">
+                        Kilograms
+                    </option>
+
+                    <option value="ml">
+                        Millilitres
+                    </option>
+
+                    <option value="l">
+                        Litres
+                    </option>
+                </select>
             </div>
 
             <button type="submit">
