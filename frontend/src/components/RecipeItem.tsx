@@ -29,6 +29,12 @@ function RecipeItem({
                 / recipe.ingredients_required
             ) * 100
         );
+    
+    const incompatibleIngredients =
+        recipe.ingredients.filter(
+        (ingredient) =>
+            ingredient.status === "incompatible"
+        ).length;
 
     const [confirmDelete, setConfirmDelete] =
         useState(false);
@@ -162,9 +168,15 @@ function RecipeItem({
                 {
                     recipe.ingredients_required === 0
                         ? "No ingredients added"
-                        : recipe.can_make
-                            ? "Ready to make"
-                            : "Ingredients needed"
+                        : incompatibleIngredients > 0
+                            ? `${incompatibleIngredients} ingredient ${
+                                incompatibleIngredients === 1
+                                    ? "has"
+                                    : "have"
+                            } incompatible units`
+                            : recipe.can_make
+                                ? "Ready to make"
+                                : "Ingredients needed"
                 }
             </span>
         </div>
