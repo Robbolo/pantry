@@ -35,7 +35,7 @@ def get_pantry_items(
             id=item.id,
             name=item.ingredient.name,
             quantity=item.quantity,
-            unit=item.ingredient.unit,
+            unit=item.unit,
         )
         for item in pantry_items
     ]
