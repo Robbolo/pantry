@@ -22,7 +22,7 @@ class Recipe(Base):
         nullable=False,
     )
 
-    base_services: Mapped[int] = mapped_column(
+    base_servings: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
         default=1,

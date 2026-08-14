@@ -136,6 +136,7 @@ def get_recipes(
             RecipeAvailabilityResponse(
                 id=recipe.id,
                 name=recipe.name,
+                base_servings=recipe.base_servings,
                 ingredients_available=ingredients_available,
                 ingredients_required=ingredients_required,
                 can_make=(
@@ -163,6 +164,7 @@ def create_recipe(
     recipe = Recipe(
         name=request.name,
         user_id=user_id,
+        base_servings=request.base_servings,
     )
 
     db.add(recipe)
@@ -198,6 +200,7 @@ def update_recipe(
         )
 
     recipe.name = request.name
+    recipe.base_servings = request.base_servings
 
     db.commit()
     db.refresh(recipe)
