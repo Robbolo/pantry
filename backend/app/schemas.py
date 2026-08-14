@@ -30,13 +30,16 @@ class PantryItemResponse(BaseModel):
 
 class RecipeCreate(BaseModel):
     name: str
+    base_servings: int
 
 class RecipeUpdate(BaseModel):
     name: str
+    base_servings: int
 
 class RecipeResponse(BaseModel):
     id: int
     name: str
+    base_servings: int
 
     model_config = {
         "from_attributes": True
@@ -67,6 +70,7 @@ class RecipeIngredientUpdate(BaseModel):
 class RecipeDetailResponse(BaseModel):
     id: int
     name: str
+    base_servings: int
     ingredients: list[RecipeIngredientAvailabilityResponse]
 
 ## Schema for pantry satifaction of specific recipe
@@ -82,6 +86,7 @@ class RecipeIngredientAvailabilityResponse(BaseModel):
     recipe_ingredient_id: int
     ingredient_id: int
     name: str
+    base_servings: int
 
     quantity_required: int
     required_unit: Unit
