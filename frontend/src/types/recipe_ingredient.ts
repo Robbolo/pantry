@@ -1,4 +1,5 @@
 import type { Unit } from "./ingredients";
+import type { RecipeIngredientAvailability } from "./recipe";
 
 export interface RecipeIngredient {
     id: number;
@@ -6,11 +7,10 @@ export interface RecipeIngredient {
     name: string;
     quantity_required: number;
     unit: Unit;
-    in_pantry: boolean;
 }
 
 export interface RecipeDetail {
     id: number;
     name: string;
-    ingredients: RecipeIngredient[];
+    ingredients: RecipeIngredientAvailability[];
 }
