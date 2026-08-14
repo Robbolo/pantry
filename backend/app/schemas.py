@@ -72,6 +72,7 @@ class RecipeDetailResponse(BaseModel):
     id: int
     name: str
     base_servings: int
+    requested_servings: int
     ingredients: list[RecipeIngredientAvailabilityResponse]
 
 ## Schema for pantry satifaction of specific recipe

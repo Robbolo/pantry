@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.dependencies import get_current_user_id, get_db
 from app.unit_conversion import units_are_compatible, convert_to_base_unit
+from app.recipe_scaling import get_scale_factor, scale_ingredient_quantity
 from app.models import Recipe, RecipeIngredient, Ingredient, PantryItem
 from app.schemas import (
     RecipeCreate,
@@ -242,9 +243,11 @@ def delete_recipe(
 )
 def get_recipe_ingredients(
     recipe_id: int,
+    servings: int | None = None,
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id),
 ):
+    
     recipe = db.scalar(
         select(Recipe).where(
             Recipe.id == recipe_id,
@@ -256,6 +259,14 @@ def get_recipe_ingredients(
         raise HTTPException(
             status_code=404,
             detail="Recipe not found",
+        )
+
+    requested_servings = servings if servings is not None else recipe.base_servings
+
+    if requested_servings < 1:
+        raise HTTPException(
+            status_code=400,
+            detail="Servings must be at least 1",
         )
 
     recipe_ingredients = db.scalars(
@@ -280,6 +291,12 @@ def get_recipe_ingredients(
     ingredient_availability = []
 
     for requirement in recipe_ingredients:
+
+        scaled_requirement = scale_ingredient_quantity(
+            requirement.quantity_required,
+            recipe.base_servings,
+            requested_servings,
+        )
         pantry_item = pantry_items_by_ingredient.get(
             requirement.ingredient_id
         )
@@ -309,7 +326,7 @@ def get_recipe_ingredients(
                 )
 
                 required_quantity_base = convert_to_base_unit(
-                    requirement.quantity_required,
+                    scaled_requirement,
                     requirement.unit,
                 )
 
@@ -328,7 +345,7 @@ def get_recipe_ingredients(
                 recipe_ingredient_id=requirement.id,
                 ingredient_id=requirement.ingredient_id,
                 name=requirement.ingredient.name,
-                quantity_required=requirement.quantity_required,
+                quantity_required=scaled_requirement,
                 required_unit=requirement.unit,
                 quantity_in_pantry=quantity_in_pantry,
                 pantry_unit=pantry_unit,
@@ -339,6 +356,8 @@ def get_recipe_ingredients(
     return RecipeDetailResponse(
         id=recipe.id,
         name=recipe.name,
+        base_servings=recipe.base_servings,
+        requested_servings=requested_servings,
         ingredients=ingredient_availability,
     )
 

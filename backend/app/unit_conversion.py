@@ -30,7 +30,7 @@ def units_are_compatible(
 
 
 def convert_to_base_unit(
-    quantity: int,
+    quantity: int|Decimal,
     unit: str,
 ) -> Decimal:
     conversion_factor = TO_BASE_UNIT.get(unit)
