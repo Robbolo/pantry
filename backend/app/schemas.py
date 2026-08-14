@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from enum import Enum
+from decimal import Decimal
 
 class Unit(str, Enum):
     each = "each"
@@ -87,7 +88,7 @@ class RecipeIngredientAvailabilityResponse(BaseModel):
     ingredient_id: int
     name: str
 
-    quantity_required: int
+    quantity_required: Decimal
     required_unit: Unit
 
     quantity_in_pantry: int
