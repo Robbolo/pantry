@@ -25,35 +25,22 @@ router = APIRouter(
 )
 
 # GET request to get the ingredients attached to a user's given recipe
-
 @router.get(
-    "/{recipe_id}/ingredients",
-    response_model=RecipeDetailResponse,
+    "",
+    response_model=list[RecipeAvailabilityResponse],
 )
-def get_recipe_ingredients(
-    recipe_id: int,
+def get_recipes(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id),
 ):
-    recipe = db.scalar(
-        select(Recipe).where(
-            Recipe.id == recipe_id,
-            Recipe.user_id == user_id,
+    recipes = db.scalars(
+        select(Recipe)
+        .options(
+            selectinload(Recipe.recipe_ingredients)
+            .selectinload(RecipeIngredient.ingredient)
         )
-    )
-
-    if recipe is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Recipe not found",
-        )
-
-    recipe_ingredients = db.scalars(
-        select(RecipeIngredient)
-        .where(
-            RecipeIngredient.recipe_id == recipe_id
-        )
-        .order_by(RecipeIngredient.id)
+        .where(Recipe.user_id == user_id)
+        .order_by(Recipe.id)
     ).all()
 
     pantry_items = db.scalars(
@@ -67,67 +54,101 @@ def get_recipe_ingredients(
         for item in pantry_items
     }
 
-    ingredient_availability = []
+    response: list[RecipeAvailabilityResponse] = []
 
-    for requirement in recipe_ingredients:
-        pantry_item = pantry_items_by_ingredient.get(
-            requirement.ingredient_id
-        )
+    for recipe in recipes:
+        ingredient_availability = []
 
-        if pantry_item is None:
-            quantity_in_pantry = 0
-            pantry_unit = None
-            status = IngredientAvailabilityStatus.missing
+        for requirement in recipe.recipe_ingredients:
+            pantry_item = pantry_items_by_ingredient.get(
+                requirement.ingredient_id
+            )
 
-        else:
-            quantity_in_pantry = pantry_item.quantity
-            pantry_unit = pantry_item.unit
-
-            if quantity_in_pantry == 0:
+            if pantry_item is None:
+                quantity_in_pantry = 0
+                pantry_unit = None
                 status = IngredientAvailabilityStatus.missing
 
-            elif not units_are_compatible(
-                pantry_item.unit,
-                requirement.unit,
-            ):
-                status = IngredientAvailabilityStatus.incompatible
-
             else:
-                pantry_quantity_base = convert_to_base_unit(
-                    pantry_item.quantity,
+                quantity_in_pantry = pantry_item.quantity
+                pantry_unit = pantry_item.unit
+
+                if quantity_in_pantry == 0:
+                    status = IngredientAvailabilityStatus.missing
+
+                elif not units_are_compatible(
                     pantry_item.unit,
-                )
-
-                required_quantity_base = convert_to_base_unit(
-                    requirement.quantity_required,
                     requirement.unit,
-                )
-
-                if pantry_quantity_base < required_quantity_base:
+                ):
                     status = (
-                        IngredientAvailabilityStatus.insufficient
+                        IngredientAvailabilityStatus.incompatible
                     )
-                else:
-                    status = IngredientAvailabilityStatus.enough
 
-        ingredient_availability.append(
-            RecipeIngredientAvailabilityResponse(
-                recipe_ingredient_id=requirement.id,
-                ingredient_id=requirement.ingredient_id,
-                name=requirement.ingredient.name,
-                quantity_required=requirement.quantity_required,
-                required_unit=requirement.unit,
-                quantity_in_pantry=quantity_in_pantry,
-                pantry_unit=pantry_unit,
-                status=status,
+                else:
+                    pantry_quantity_base = convert_to_base_unit(
+                        pantry_item.quantity,
+                        pantry_item.unit,
+                    )
+
+                    required_quantity_base = convert_to_base_unit(
+                        requirement.quantity_required,
+                        requirement.unit,
+                    )
+
+                    if (
+                        pantry_quantity_base
+                        < required_quantity_base
+                    ):
+                        status = (
+                            IngredientAvailabilityStatus.insufficient
+                        )
+                    else:
+                        status = (
+                            IngredientAvailabilityStatus.enough
+                        )
+
+            ingredient_availability.append(
+                RecipeIngredientAvailabilityResponse(
+                    recipe_ingredient_id=requirement.id,
+                    ingredient_id=requirement.ingredient_id,
+                    name=requirement.ingredient.name,
+                    quantity_required=(
+                        requirement.quantity_required
+                    ),
+                    required_unit=requirement.unit,
+                    quantity_in_pantry=quantity_in_pantry,
+                    pantry_unit=pantry_unit,
+                    status=status,
+                )
+            )
+
+        ingredients_available = sum(
+            item.status
+            == IngredientAvailabilityStatus.enough
+            for item in ingredient_availability
+        )
+
+        ingredients_required = len(
+            ingredient_availability
+        )
+
+        response.append(
+            RecipeAvailabilityResponse(
+                id=recipe.id,
+                name=recipe.name,
+                ingredients_available=ingredients_available,
+                ingredients_required=ingredients_required,
+                can_make=(
+                    ingredients_required > 0
+                    and ingredients_available
+                    == ingredients_required
+                ),
+                ingredients=ingredient_availability,
             )
         )
 
-    return RecipeDetailResponse(
-        id=recipe.id,
-        name=recipe.name,
-        ingredients=ingredient_availability,
-    )
+    return response
+
 
 # POST request to make a new named recipe for a user
 @router.post(
@@ -242,20 +263,80 @@ def get_recipe_ingredients(
         .order_by(RecipeIngredient.id)
     ).all()
 
+    pantry_items = db.scalars(
+        select(PantryItem).where(
+            PantryItem.user_id == user_id
+        )
+    ).all()
+
+    pantry_items_by_ingredient = {
+        item.ingredient_id: item
+        for item in pantry_items
+    }
+
+    ingredient_availability = []
+
+    for requirement in recipe_ingredients:
+        pantry_item = pantry_items_by_ingredient.get(
+            requirement.ingredient_id
+        )
+
+        if pantry_item is None:
+            quantity_in_pantry = 0
+            pantry_unit = None
+            status = IngredientAvailabilityStatus.missing
+
+        else:
+            quantity_in_pantry = pantry_item.quantity
+            pantry_unit = pantry_item.unit
+
+            if quantity_in_pantry == 0:
+                status = IngredientAvailabilityStatus.missing
+
+            elif not units_are_compatible(
+                pantry_item.unit,
+                requirement.unit,
+            ):
+                status = IngredientAvailabilityStatus.incompatible
+
+            else:
+                pantry_quantity_base = convert_to_base_unit(
+                    pantry_item.quantity,
+                    pantry_item.unit,
+                )
+
+                required_quantity_base = convert_to_base_unit(
+                    requirement.quantity_required,
+                    requirement.unit,
+                )
+
+                if (
+                    pantry_quantity_base
+                    < required_quantity_base
+                ):
+                    status = (
+                        IngredientAvailabilityStatus.insufficient
+                    )
+                else:
+                    status = IngredientAvailabilityStatus.enough
+
+        ingredient_availability.append(
+            RecipeIngredientAvailabilityResponse(
+                recipe_ingredient_id=requirement.id,
+                ingredient_id=requirement.ingredient_id,
+                name=requirement.ingredient.name,
+                quantity_required=requirement.quantity_required,
+                required_unit=requirement.unit,
+                quantity_in_pantry=quantity_in_pantry,
+                pantry_unit=pantry_unit,
+                status=status,
+            )
+        )
+
     return RecipeDetailResponse(
         id=recipe.id,
         name=recipe.name,
-        ingredients=[
-            RecipeIngredientAvailabilityResponse(
-                id=item.id,
-                ingredient_id=item.ingredient_id,
-                name=item.ingredient.name,
-                quantity_required=item.quantity_required,
-                unit=item.unit,
-                in_pantry=item.status
-            )
-            for item in recipe_ingredients
-        ],
+        ingredients=ingredient_availability,
     )
 
 # POST request to add an ingredient to a user's given recipe
