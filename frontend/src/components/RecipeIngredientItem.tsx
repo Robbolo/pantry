@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-import type { RecipeIngredient } from "../types/recipe_ingredient";
+import type {
+    RecipeIngredientAvailability,
+} from "../types/recipe";
 
 import RecipeIngredientEditor from "./RecipeIngredientEditor";
 
@@ -12,7 +14,7 @@ import {
 
 interface Props {
     recipeId: number;
-    ingredient: RecipeIngredient;
+    ingredient: RecipeIngredientAvailability;
     onIngredientChanged: () => void;
 }
 
@@ -32,7 +34,7 @@ function RecipeIngredientItem({
     async function handleDelete() {
         await deleteRecipeIngredient(
             recipeId,
-            ingredient.id,
+            ingredient.recipe_ingredient_id,
         );
 
         setConfirmDelete(false);
@@ -40,14 +42,26 @@ function RecipeIngredientItem({
     }
 
 
+    const statusIcon =
+        ingredient.status === "enough"
+            ? "🟢"
+            : ingredient.status === "insufficient"
+                ? "🟠"
+                : ingredient.status === "missing"
+                    ? "🔴"
+                    : "⚠️";
+
+
     return (
         <div>
             <span>
+                {statusIcon}
+                {" "}
                 {ingredient.name}
                 {": "}
                 {ingredient.quantity_required}
                 {" "}
-                {ingredient.unit}
+                {ingredient.required_unit}
             </span>
 
             <button
@@ -64,7 +78,7 @@ function RecipeIngredientItem({
                     initialQuantityRequired={
                         ingredient.quantity_required
                     }
-                    initialUnit={ingredient.unit}
+                    initialUnit={ingredient.required_unit}
                     onSave={async (
                         name,
                         quantityRequired,
@@ -72,7 +86,7 @@ function RecipeIngredientItem({
                     ) => {
                         await updateRecipeIngredient(
                             recipeId,
-                            ingredient.id,
+                            ingredient.recipe_ingredient_id,
                             name,
                             quantityRequired,
                             unit,

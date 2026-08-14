@@ -1,11 +1,13 @@
-import type { RecipeIngredient } from "../types/recipe_ingredient";
+import type {
+    RecipeIngredientAvailability,
+} from "../types/recipe";
 
 import RecipeIngredientItem from "./RecipeIngredientItem";
 
 
 interface Props {
     recipeId: number;
-    ingredients: RecipeIngredient[];
+    ingredients: RecipeIngredientAvailability[];
     onIngredientChanged: () => void;
 }
 
@@ -15,21 +17,16 @@ function RecipeIngredientList({
     ingredients,
     onIngredientChanged,
 }: Props) {
-
     return (
         <div>
-            {
-                ingredients.map((ingredient) => (
-
-                    <RecipeIngredientItem
-                        key={ingredient.id}
-                        recipeId={recipeId}
-                        ingredient={ingredient}
-                        onIngredientChanged={onIngredientChanged}
-                    />
-
-                ))
-            }
+            {ingredients.map((ingredient) => (
+                <RecipeIngredientItem
+                    key={ingredient.recipe_ingredient_id}
+                    recipeId={recipeId}
+                    ingredient={ingredient}
+                    onIngredientChanged={onIngredientChanged}
+                />
+            ))}
         </div>
     );
 }
