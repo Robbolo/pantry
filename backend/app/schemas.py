@@ -67,7 +67,7 @@ class RecipeIngredientUpdate(BaseModel):
 class RecipeDetailResponse(BaseModel):
     id: int
     name: str
-    ingredients: list[RecipeIngredientResponse]
+    ingredients: list[RecipeIngredientAvailabilityResponse]
 
 ## Schema for pantry satifaction of specific recipe
 

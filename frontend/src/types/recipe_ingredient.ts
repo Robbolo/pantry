@@ -6,6 +6,7 @@ export interface RecipeIngredient {
     name: string;
     quantity_required: number;
     unit: Unit;
+    in_pantry: boolean;
 }
 
 export interface RecipeDetail {
