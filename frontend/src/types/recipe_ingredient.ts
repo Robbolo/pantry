@@ -12,5 +12,6 @@ export interface RecipeIngredient {
 export interface RecipeDetail {
     id: number;
     name: string;
+    base_servings: number;
     ingredients: RecipeIngredientAvailability[];
 }

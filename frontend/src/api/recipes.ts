@@ -17,6 +17,7 @@ export async function getRecipes(): Promise<Recipe[]> {
 
 export async function createRecipe(
     name: string,
+    baseServings: number,
 ): Promise<Recipe> {
     const response = await apiFetch(
         "/recipes",
@@ -27,6 +28,7 @@ export async function createRecipe(
             },
             body: JSON.stringify({
                 name,
+                base_servings: baseServings,
             }),
         },
     );
@@ -113,6 +115,7 @@ export async function deleteRecipeIngredient(
 export async function updateRecipe(
     recipeId: number,
     name: string,
+    baseServings: number,
 ): Promise<Recipe> {
     const response = await apiFetch(
         `/recipes/${recipeId}`,
@@ -123,6 +126,7 @@ export async function updateRecipe(
             },
             body: JSON.stringify({
                 name,
+                base_servings: baseServings,
             }),
         },
     );

@@ -2,21 +2,21 @@ import { useState } from "react";
 
 import { createRecipe } from "../api/recipes";
 
-
 interface Props {
     onRecipeChanged: () => void;
 }
 
-
 function RecipeForm({
     onRecipeChanged,
 }: Props) {
-
     const [isOpen, setIsOpen] =
         useState(false);
 
     const [name, setName] =
         useState("");
+
+    const [baseServings, setBaseServings] =
+        useState(1);
 
 
     async function handleSave() {
@@ -26,9 +26,11 @@ function RecipeForm({
 
         await createRecipe(
             name.trim(),
+            baseServings,
         );
 
         setName("");
+        setBaseServings(1);
         setIsOpen(false);
 
         onRecipeChanged();
@@ -61,6 +63,20 @@ function RecipeForm({
                 }
             />
 
+            <label>
+                Servings:
+                <input
+                    type="number"
+                    min="1"
+                    value={baseServings}
+                    onChange={(event) =>
+                        setBaseServings(
+                            Number(event.target.value)
+                        )
+                    }
+                />
+            </label>
+
             <button
                 onClick={handleSave}
             >
@@ -70,6 +86,7 @@ function RecipeForm({
             <button
                 onClick={() => {
                     setName("");
+                    setBaseServings(1);
                     setIsOpen(false);
                 }}
             >
@@ -78,6 +95,5 @@ function RecipeForm({
         </div>
     );
 }
-
 
 export default RecipeForm;

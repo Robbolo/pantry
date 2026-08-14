@@ -25,6 +25,7 @@ export interface RecipeIngredientAvailability {
 export interface Recipe {
     id: number;
     name: string;
+    base_servings: number;
     ingredients_available: number;
     ingredients_required: number;
     can_make: boolean;
