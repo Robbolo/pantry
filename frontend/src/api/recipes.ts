@@ -39,9 +39,14 @@ export async function createRecipe(
 
 export async function getRecipeDetails(
     recipeId: number,
+    servings?: number,
 ): Promise<RecipeDetail> {
+
+    const query = servings
+        ? `?servings=${servings}`
+        : "";
     const response = await apiFetch(
-        `/recipes/${recipeId}/ingredients`
+        `/recipes/${recipeId}/ingredients${query}`
     );
 
     return response.json();
