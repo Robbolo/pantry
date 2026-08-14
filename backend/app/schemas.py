@@ -86,7 +86,6 @@ class RecipeIngredientAvailabilityResponse(BaseModel):
     recipe_ingredient_id: int
     ingredient_id: int
     name: str
-    base_servings: int
 
     quantity_required: int
     required_unit: Unit
@@ -100,6 +99,7 @@ class RecipeIngredientAvailabilityResponse(BaseModel):
 class RecipeAvailabilityResponse(BaseModel):
     id: int
     name: str
+    base_servings: int
     ingredients_available: int
     ingredients_required: int
     can_make: bool
