@@ -126,3 +126,31 @@ class MealPrepResponse(BaseModel):
     servings_made: int
 
     model_config = {"from_attributes": True}
+
+class MealType(str, Enum):
+    breakfast = "breakfast"
+    lunch = "lunch"
+    dinner = "dinner"
+    snack = "snack"
+
+class MealAllocationCreate(BaseModel):
+    meal_prep_id: int
+    meal_date: date
+    meal_type: MealType
+    servings: int = Field(ge=1)
+
+
+class MealAllocationUpdate(BaseModel):
+    meal_date: date
+    meal_type: MealType
+    servings: int = Field(ge=1)
+
+
+class MealAllocationResponse(BaseModel):
+    id: int
+    meal_prep_id: int
+    meal_date: date
+    meal_type: MealType
+    servings: int
+
+    model_config = {"from_attributes": True}
