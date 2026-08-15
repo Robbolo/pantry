@@ -1,3 +1,5 @@
+from datetime import date
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -50,3 +52,37 @@ def create_meal_prep(
     db.refresh(meal_prep)
 
     return meal_prep
+
+
+
+@router.get(
+    "",
+    response_model=list[MealPrepResponse],
+)
+def get_meal_preps(
+    start_date: date,
+    end_date: date,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
+):
+
+    if end_date < start_date:
+        raise HTTPException(
+            status_code=400,
+            detail="end_date must be on or after start_date",
+        )
+    
+    meal_preps = db.scalars(
+        select(MealPrep)
+        .where(
+            MealPrep.user_id == user_id,
+            MealPrep.prep_date >= start_date,
+            MealPrep.prep_date <= end_date,
+        )
+        .order_by(
+            MealPrep.prep_date,
+            MealPrep.id,
+        )
+    ).all()
+
+    return meal_preps
