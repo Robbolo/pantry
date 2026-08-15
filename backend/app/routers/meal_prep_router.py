@@ -86,3 +86,34 @@ def get_meal_preps(
     ).all()
 
     return meal_preps
+
+@router.put(
+    "/{meal_prep_id}",
+    response_model=MealPrepResponse,
+)
+def update_meal_prep(
+    meal_prep_id: int,
+    request: MealPrepUpdate,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
+):
+    meal_prep = db.scalar(
+        select(MealPrep).where(
+            MealPrep.id == meal_prep_id,
+            MealPrep.user_id == user_id,
+        )
+    )
+
+    if meal_prep is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Meal prep not found",
+        )
+
+    meal_prep.prep_date = request.prep_date
+    meal_prep.servings_made = request.servings_made
+
+    db.commit()
+    db.refresh(meal_prep)
+
+    return meal_prep
