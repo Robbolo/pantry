@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from enum import Enum
 from decimal import Decimal
 from datetime import date
@@ -111,12 +111,12 @@ class RecipeAvailabilityResponse(BaseModel):
 class MealPrepCreate(BaseModel):
     recipe_id: int
     prep_date: date
-    servings_made: int
+    servings_made: int = Field(ge=1)
 
 
 class MealPrepUpdate(BaseModel):
     prep_date: date
-    servings_made: int
+    servings_made: int = Field(ge=1)
 
 
 class MealPrepResponse(BaseModel):
