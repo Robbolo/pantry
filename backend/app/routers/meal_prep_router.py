@@ -117,3 +117,28 @@ def update_meal_prep(
     db.refresh(meal_prep)
 
     return meal_prep
+
+@router.delete(
+    "/{meal_prep_id}",
+    status_code=204,
+)
+def delete_meal_prep(
+    meal_prep_id: int,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
+):
+    meal_prep = db.scalar(
+        select(MealPrep).where(
+            MealPrep.id == meal_prep_id,
+            MealPrep.user_id == user_id,
+        )
+    )
+
+    if meal_prep is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Meal prep not found",
+        )
+
+    db.delete(meal_prep)
+    db.commit()
