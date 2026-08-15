@@ -32,3 +32,8 @@ class User(Base):
         "MealPrep",
         back_populates="user",
     )
+
+    meal_allocations = relationship(
+        "MealAllocation",
+        back_populates="user",
+    )
