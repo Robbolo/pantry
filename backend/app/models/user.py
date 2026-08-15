@@ -27,3 +27,8 @@ class User(Base):
         "Recipe",
         back_populates="user",
     )
+
+    meal_preps = relationship(
+        "MealPrep",
+        back_populates="user",
+    )

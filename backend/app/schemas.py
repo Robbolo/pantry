@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from enum import Enum
 from decimal import Decimal
+from datetime import date
 
 class Unit(str, Enum):
     each = "each"
@@ -106,3 +107,22 @@ class RecipeAvailabilityResponse(BaseModel):
     ingredients_required: int
     can_make: bool
     ingredients: list[RecipeIngredientAvailabilityResponse]
+
+class MealPrepCreate(BaseModel):
+    recipe_id: int
+    prep_date: date
+    servings_made: int
+
+
+class MealPrepUpdate(BaseModel):
+    prep_date: date
+    servings_made: int
+
+
+class MealPrepResponse(BaseModel):
+    id: int
+    recipe_id: int
+    prep_date: date
+    servings_made: int
+
+    model_config = {"from_attributes": True}
