@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 import { getRecipeDetails } from "../api/recipes";
 import type { RecipeDetail } from "../types/recipe_ingredient";
 
-import RecipeIngredientForm from "../components/RecipeIngredientForm";
-import RecipeIngredientList from "../components/RecipeIngredientList";
-import RecipeServingsControl from "../components/RecipeServingsControl";
+import RecipeIngredientForm from "../components/recipe_ingredient/RecipeIngredientForm";
+import RecipeIngredientList from "../components/recipe_ingredient/RecipeIngredientList";
+import RecipeServingsControl from "../components/recipe/RecipeServingsControl";
 
 
 

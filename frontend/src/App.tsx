@@ -9,6 +9,7 @@ import Navbar from "./components/TopNavbar";
 import PantryPage from "./pages/PantryPage";
 import ListRecipes from "./pages/ListRecipes";
 import RecipeDetailPage from "./pages/RecipeDetailPage";
+import MealPlannerPage from "./pages/MealPlannerPage";
 
 
 function App() {
@@ -35,6 +36,11 @@ function App() {
                  <Route
                     path="/recipes/:recipeId"
                     element={<RecipeDetailPage />}
+                />
+
+                <Route
+                    path="/meal-planner"
+                    element={<MealPlannerPage />}
                 />
 
             </Routes>

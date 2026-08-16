@@ -15,6 +15,10 @@ function Navbar() {
                 Recipes
             </Link>
 
+            <Link to="/meal-planner">
+                Meal Planner
+            </Link>
+
         </nav>
     );
 

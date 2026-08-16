@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import IngredientList from "../components/IngredientList";
-import IngredientForm from "../components/IngredientForm";
+import IngredientList from "../components/ingredient/IngredientList";
+import IngredientForm from "../components/ingredient/IngredientForm";
 
 import type { Ingredient } from "../types/ingredients";
 import { getIngredients } from "../api/ingredients";
