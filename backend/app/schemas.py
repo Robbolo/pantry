@@ -154,3 +154,12 @@ class MealAllocationResponse(BaseModel):
     servings: int
 
     model_config = {"from_attributes": True}
+
+class AvailableMealPrepResponse(BaseModel):
+    id: int
+    recipe_id: int
+    recipe_name: str
+    prep_date: date
+    servings_made: int
+    servings_allocated: int
+    servings_remaining: int
