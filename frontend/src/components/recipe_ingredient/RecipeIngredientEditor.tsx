@@ -1,17 +1,17 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
 
-import type { Unit } from "../types/ingredients";
+import type { Unit } from "../../types/ingredients";
 
 
 interface Props {
     initialName?: string;
-    initialQuantity?: number;
+    initialQuantityRequired?: number;
     initialUnit?: Unit;
 
     onSave: (
         name: string,
-        quantity: number,
+        quantityRequired: number,
         unit: Unit,
     ) => Promise<void>;
 
@@ -19,19 +19,18 @@ interface Props {
 }
 
 
-function IngredientEditor({
+function RecipeIngredientEditor({
     initialName = "",
-    initialQuantity = 0,
+    initialQuantityRequired = 0,
     initialUnit = "each",
     onSave,
     onCancel,
 }: Props) {
-
     const [name, setName] =
         useState(initialName);
 
-    const [quantity, setQuantity] =
-        useState(initialQuantity);
+    const [quantityRequired, setQuantityRequired] =
+        useState(initialQuantityRequired);
 
     const [unit, setUnit] =
         useState<Unit>(initialUnit);
@@ -44,7 +43,7 @@ function IngredientEditor({
 
         await onSave(
             name,
-            quantity,
+            quantityRequired,
             unit,
         );
     }
@@ -69,14 +68,15 @@ function IngredientEditor({
 
             <div>
                 <label>
-                    Quantity
+                    Quantity Required
                 </label>
 
                 <input
                     type="number"
-                    value={quantity}
+                    value={quantityRequired}
+                    min="0"
                     onChange={(event) =>
-                        setQuantity(
+                        setQuantityRequired(
                             Number(event.target.value)
                         )
                     }
@@ -137,4 +137,4 @@ function IngredientEditor({
 }
 
 
-export default IngredientEditor;
+export default RecipeIngredientEditor;

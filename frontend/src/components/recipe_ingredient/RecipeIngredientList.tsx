@@ -1,6 +1,6 @@
 import type {
     RecipeIngredientAvailability,
-} from "../types/recipe";
+} from "../../types/recipe";
 
 import RecipeIngredientItem from "./RecipeIngredientItem";
 

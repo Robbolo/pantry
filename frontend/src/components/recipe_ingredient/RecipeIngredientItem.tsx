@@ -2,14 +2,14 @@ import { useState } from "react";
 
 import type {
     RecipeIngredientAvailability,
-} from "../types/recipe";
+} from "../../types/recipe";
 
 import RecipeIngredientEditor from "./RecipeIngredientEditor";
 
 import {
     deleteRecipeIngredient,
     updateRecipeIngredient,
-} from "../api/recipes";
+} from "../../api/recipes";
 
 
 interface Props {

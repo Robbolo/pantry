@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import RecipeIngredientEditor from "./RecipeIngredientEditor";
-import { addRecipeIngredient } from "../api/recipes";
+import { addRecipeIngredient } from "../../api/recipes";
 
 
 interface Props {

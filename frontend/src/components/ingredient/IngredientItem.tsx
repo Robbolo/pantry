@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { Ingredient } from "../types/ingredients";
+import type { Ingredient } from "../../types/ingredients";
 
 import IngredientEditor from "./IngredientEditor";
 
@@ -9,7 +9,7 @@ import {
     incrementIngredient,
     decrementIngredient,
     updateIngredient,
-} from "../api/ingredients";
+} from "../../api/ingredients";
 
 
 interface Props {

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import type { Recipe } from "../types/recipe";
+import type { Recipe } from "../../types/recipe";
 
 import {
     deleteRecipe,
     updateRecipe,
-} from "../api/recipes";
+} from "../../api/recipes";
 
 
 interface Props {
@@ -45,6 +45,9 @@ function RecipeItem({
     const [name, setName] =
         useState(recipe.name);
 
+    const [baseServings, setBaseServings] =
+        useState(recipe.base_servings);
+
 
     async function handleDelete() {
         await deleteRecipe(recipe.id);
@@ -63,6 +66,7 @@ function RecipeItem({
         await updateRecipe(
             recipe.id,
             name.trim(),
+            baseServings
         );
 
         setIsEditing(false);
@@ -98,6 +102,20 @@ function RecipeItem({
                         }
                     />
 
+                    <label>
+                        Base servings:
+                        <input
+                            type="number"
+                            min="1"
+                            value={baseServings}
+                            onChange={(event) =>
+                                setBaseServings(
+                                    Number(event.target.value)
+                                )
+                            }
+                        />
+                    </label>
+
                     <button onClick={handleUpdate}>
                         Save
                     </button>
@@ -105,6 +123,9 @@ function RecipeItem({
                     <button
                         onClick={() => {
                             setName(recipe.name);
+                            setBaseServings(
+                                recipe.base_servings
+                            );
                             setIsEditing(false);
                         }}
                     >

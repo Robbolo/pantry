@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { getRecipes } from "../api/recipes";
 import type { Recipe } from "../types/recipe";
 
-import RecipeForm from "../components/RecipeForm";
-import RecipeList from "../components/RecipeList";
+import RecipeForm from "../components/recipe/RecipeForm";
+import RecipeList from "../components/recipe/RecipeList";
 
 
 function ListRecipes() {

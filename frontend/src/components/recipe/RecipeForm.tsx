@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { createRecipe } from "../api/recipes";
+import { createRecipe } from "../../api/recipes";
 
 interface Props {
     onRecipeChanged: () => void;
