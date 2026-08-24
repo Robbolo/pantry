@@ -66,6 +66,18 @@ function getDatesInRange(
     return dates;
 }
 
+function isToday(
+    date: Date,
+): boolean {
+    const today = new Date();
+
+    return (
+        date.getFullYear() === today.getFullYear()
+        && date.getMonth() === today.getMonth()
+        && date.getDate() === today.getDate()
+    );
+}
+
 function formatDate(
     date: Date,
 ): string {
@@ -104,80 +116,93 @@ function MealPlannerCalendar({
             }}
         >
             {dates.map((date) => {
-    const dateString = formatDate(date);
+                const dateString = formatDate(date);
 
-    const prepsForDay = mealPreps.filter(
-        (prep) =>
-            prep.prep_date === dateString
-    );
+                const currentDay = isToday(date);
 
-    const allocationsForDay =
-        mealAllocations.filter(
-            (allocation) =>
-                allocation.meal_date
-                === dateString
-        );
+                const prepsForDay = mealPreps.filter(
+                    (prep) =>
+                        prep.prep_date === dateString
+                );
 
-    return (
-        <div
-            key={dateString}
-            style={{
-                border: "1px solid",
-                padding: "8px",
-                minHeight: "120px",
-            }}
-        >
-            <strong>
-                {formatDisplayDate(date)}
-            </strong>
-
-            {prepsForDay.map((prep) => (
-                <div
-                    key={`prep-${prep.id}`}
-                    style={{
-                        border: "1px solid",
-                        borderRadius: "4px",
-                        padding: "6px",
-                        marginTop: "6px",
-                    }}
-                >
-                    PREP: {prep.recipe_name}
-                    {" — "}
-                    {prep.servings_made}
-                    {" servings"}
-                </div>
-            ))}
-
-            {allocationsForDay.map(
-                (allocation) => {
-                    const mealPrep = mealPreps.find(
-                        (prep) =>
-                            prep.id === allocation.meal_prep_id
+                const allocationsForDay =
+                    mealAllocations.filter(
+                        (allocation) =>
+                            allocation.meal_date
+                            === dateString
                     );
 
-                    return (
-                        <div
-                            key={`allocation-${allocation.id}`}
+                return (
+                    <div
+                        key={dateString}
+                        style={{
+                            border: currentDay
+                                ? "3px solid"
+                                : "1px solid",
+                            padding: "8px",
+                            minHeight: "120px",
+                        }}
+                    >
+                        <strong
                             style={{
-                                border: "1px solid",
-                                borderRadius: "4px",
-                                padding: "6px",
-                                marginTop: "6px",
+                                fontWeight: currentDay
+                                    ? "bold"
+                                    : "normal",
                             }}
                         >
-                            {allocation.meal_type}
-                            {": "}
-                            {mealPrep?.recipe_name ?? "Unknown recipe"}
-                            {" — "}
-                            {allocation.servings}
-                            {" servings"}
-                        </div>
-                    );
-                }
-            )}
-        </div>
-    );
-})}
+                            {formatDisplayDate(date)}
+                        </strong>
+
+                        {prepsForDay.map((prep) => (
+                            <div
+                                key={`prep-${prep.id}`}
+                                style={{
+                                    border: "1px solid",
+                                    borderRadius: "4px",
+                                    padding: "6px",
+                                    marginTop: "6px",
+                                }}
+                            >
+                                PREP: {prep.recipe_name}
+                                {" — "}
+                                {prep.servings_made}
+                                {" servings"}
+                            </div>
+                        ))}
+
+                        {allocationsForDay.map(
+                            (allocation) => {
+                                const mealPrep =
+                                    mealPreps.find(
+                                        (prep) =>
+                                            prep.id
+                                            === allocation.meal_prep_id
+                                    );
+
+                                return (
+                                    <div
+                                        key={`allocation-${allocation.id}`}
+                                        style={{
+                                            border: "1px solid",
+                                            borderRadius: "4px",
+                                            padding: "6px",
+                                            marginTop: "6px",
+                                        }}
+                                    >
+                                        {allocation.meal_type}
+                                        {": "}
+                                        {mealPrep?.recipe_name
+                                            ?? "Unknown recipe"}
+                                        {" — "}
+                                        {allocation.servings}
+                                        {" servings"}
+                                    </div>
+                                );
+                            }
+                        )}
+                    </div>
+                );
+            })}
         </div>
     );
 }
