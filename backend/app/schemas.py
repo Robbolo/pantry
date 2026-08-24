@@ -122,6 +122,7 @@ class MealPrepUpdate(BaseModel):
 class MealPrepResponse(BaseModel):
     id: int
     recipe_id: int
+    recipe_name: str
     prep_date: date
     servings_made: int
 

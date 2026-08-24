@@ -5,7 +5,7 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db, get_current_user_id
-from app.models import MealPrep, Recipe, User, MealAllocation
+from app.models import MealPrep, Recipe, MealAllocation
 from app.schemas import (
 MealPrepCreate, 
 MealPrepUpdate,
@@ -52,7 +52,13 @@ def create_meal_prep(
     db.commit()
     db.refresh(meal_prep)
 
-    return meal_prep
+    return MealPrepResponse(
+        id=meal_prep.id,
+        recipe_id=meal_prep.recipe_id,
+        recipe_name=meal_prep.recipe.name,
+        prep_date=meal_prep.prep_date,
+        servings_made=meal_prep.servings_made,
+    )
 
 
 
@@ -86,7 +92,16 @@ def get_meal_preps(
         )
     ).all()
 
-    return meal_preps
+    return [
+        MealPrepResponse(
+            id=meal_prep.id,
+            recipe_id=meal_prep.recipe_id,
+            recipe_name=meal_prep.recipe.name,
+            prep_date=meal_prep.prep_date,
+            servings_made=meal_prep.servings_made,
+        )
+        for meal_prep in meal_preps
+    ]
 
 @router.put(
     "/{meal_prep_id}",
@@ -139,7 +154,13 @@ def update_meal_prep(
     db.commit()
     db.refresh(meal_prep)
 
-    return meal_prep
+    return MealPrepResponse(
+        id=meal_prep.id,
+        recipe_id=meal_prep.recipe_id,
+        recipe_name=meal_prep.recipe.name,
+        prep_date=meal_prep.prep_date,
+        servings_made=meal_prep.servings_made,
+    )
 
 @router.delete(
     "/{meal_prep_id}",
