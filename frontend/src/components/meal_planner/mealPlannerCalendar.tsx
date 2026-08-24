@@ -141,7 +141,7 @@ function MealPlannerCalendar({
                         marginTop: "6px",
                     }}
                 >
-                    PREP: Recipe {prep.recipe_id}
+                    PREP: {prep.recipe_name}
                     {" — "}
                     {prep.servings_made}
                     {" servings"}
@@ -149,24 +149,31 @@ function MealPlannerCalendar({
             ))}
 
             {allocationsForDay.map(
-                (allocation) => (
-                    <div
-                        key={`allocation-${allocation.id}`}
-                        style={{
-                            border: "1px solid",
-                            borderRadius: "4px",
-                            padding: "6px",
-                            marginTop: "6px",
-                        }}
-                    >
-                        {allocation.meal_type}
-                        {": "}
-                        Prep {allocation.meal_prep_id}
-                        {" — "}
-                        {allocation.servings}
-                        {" servings"}
-                    </div>
-                )
+                (allocation) => {
+                    const mealPrep = mealPreps.find(
+                        (prep) =>
+                            prep.id === allocation.meal_prep_id
+                    );
+
+                    return (
+                        <div
+                            key={`allocation-${allocation.id}`}
+                            style={{
+                                border: "1px solid",
+                                borderRadius: "4px",
+                                padding: "6px",
+                                marginTop: "6px",
+                            }}
+                        >
+                            {allocation.meal_type}
+                            {": "}
+                            {mealPrep?.recipe_name ?? "Unknown recipe"}
+                            {" — "}
+                            {allocation.servings}
+                            {" servings"}
+                        </div>
+                    );
+                }
             )}
         </div>
     );

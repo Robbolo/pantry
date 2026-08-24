@@ -1,6 +1,7 @@
 export interface MealPrep {
     id: number;
     recipe_id: number;
+    recipe_name: string;
     prep_date: string;
     servings_made: number;
 }
