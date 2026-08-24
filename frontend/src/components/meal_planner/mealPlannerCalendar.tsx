@@ -132,7 +132,15 @@ function MealPlannerCalendar({
             </strong>
 
             {prepsForDay.map((prep) => (
-                <div key={`prep-${prep.id}`}>
+                <div
+                    key={`prep-${prep.id}`}
+                    style={{
+                        border: "1px solid",
+                        borderRadius: "4px",
+                        padding: "6px",
+                        marginTop: "6px",
+                    }}
+                >
                     PREP: Recipe {prep.recipe_id}
                     {" — "}
                     {prep.servings_made}
@@ -144,6 +152,12 @@ function MealPlannerCalendar({
                 (allocation) => (
                     <div
                         key={`allocation-${allocation.id}`}
+                        style={{
+                            border: "1px solid",
+                            borderRadius: "4px",
+                            padding: "6px",
+                            marginTop: "6px",
+                        }}
                     >
                         {allocation.meal_type}
                         {": "}
