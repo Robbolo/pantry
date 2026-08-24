@@ -109,6 +109,8 @@ function MealPlannerPage() {
             <MealPlannerCalendar
                 startDate={startDate}
                 endDate={endDate}
+                mealPreps={mealPreps}
+                mealAllocations={mealAllocations}
             />
 
             <div>

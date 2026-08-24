@@ -1,6 +1,11 @@
+import type { MealPrep } from "../../types/meal_prep";
+import type { MealAllocation } from "../../types/meal_allocation";
+
 interface Props {
     startDate: string;
     endDate: string;
+    mealPreps: MealPrep[];
+    mealAllocations: MealAllocation[];
 }
 
 
@@ -61,10 +66,28 @@ function getDatesInRange(
     return dates;
 }
 
+function formatDate(
+    date: Date,
+): string {
+    const year = date.getFullYear();
+
+    const month = String(
+        date.getMonth() + 1,
+    ).padStart(2, "0");
+
+    const day = String(
+        date.getDate(),
+    ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
 
 function MealPlannerCalendar({
     startDate,
     endDate,
+    mealPreps,
+    mealAllocations,
 }: Props) {
     const dates = getDatesInRange(
         startDate,
@@ -80,20 +103,60 @@ function MealPlannerCalendar({
                 gap: "8px",
             }}
         >
-            {dates.map((date) => (
-                <div
-                    key={date.toISOString()}
-                    style={{
-                        border: "1px solid",
-                        padding: "8px",
-                        minHeight: "120px",
-                    }}
-                >
-                    <strong>
-                        {formatDisplayDate(date)}
-                    </strong>
+            {dates.map((date) => {
+    const dateString = formatDate(date);
+
+    const prepsForDay = mealPreps.filter(
+        (prep) =>
+            prep.prep_date === dateString
+    );
+
+    const allocationsForDay =
+        mealAllocations.filter(
+            (allocation) =>
+                allocation.meal_date
+                === dateString
+        );
+
+    return (
+        <div
+            key={dateString}
+            style={{
+                border: "1px solid",
+                padding: "8px",
+                minHeight: "120px",
+            }}
+        >
+            <strong>
+                {formatDisplayDate(date)}
+            </strong>
+
+            {prepsForDay.map((prep) => (
+                <div key={`prep-${prep.id}`}>
+                    PREP: Recipe {prep.recipe_id}
+                    {" — "}
+                    {prep.servings_made}
+                    {" servings"}
                 </div>
             ))}
+
+            {allocationsForDay.map(
+                (allocation) => (
+                    <div
+                        key={`allocation-${allocation.id}`}
+                    >
+                        {allocation.meal_type}
+                        {": "}
+                        Prep {allocation.meal_prep_id}
+                        {" — "}
+                        {allocation.servings}
+                        {" servings"}
+                    </div>
+                )
+            )}
+        </div>
+    );
+})}
         </div>
     );
 }
