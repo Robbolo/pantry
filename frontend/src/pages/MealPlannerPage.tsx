@@ -4,10 +4,17 @@ import PlannerViewControls, {
     type PlannerViewMode,
 } from "../components/meal_planner/PlannerViewControls";
 
+import { getPlannerDateRange } from "../utils/planner_dates";
+
 
 function MealPlannerPage() {
     const [viewMode, setViewMode] =
-        useState<PlannerViewMode>("week");
+        useState<PlannerViewMode>("fortnight");
+    
+    const {
+        startDate,
+        endDate,
+    } = getPlannerDateRange(viewMode);
 
     return (
         <div>
@@ -17,9 +24,13 @@ function MealPlannerPage() {
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
             />
-
             <p>
                 Current view: {viewMode}
+            </p>
+            <p>
+                {startDate}
+                {" to "}
+                {endDate}
             </p>
         </div>
     );
