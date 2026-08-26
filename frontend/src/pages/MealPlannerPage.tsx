@@ -29,6 +29,9 @@ import {
 import MealPlannerCalendar
     from "../components/meal_planner/mealPlannerCalendar";
 
+import MealPrepPanel
+    from "../components/meal_planner/MealPrepPanel";
+
 
 function MealPlannerPage() {
     const [viewMode, setViewMode] =
@@ -111,6 +114,10 @@ function MealPlannerPage() {
                 endDate={endDate}
                 mealPreps={mealPreps}
                 mealAllocations={mealAllocations}
+            />
+
+            <MealPrepPanel
+                availableMealPreps={availableMealPreps}
             />
 
             <div>
