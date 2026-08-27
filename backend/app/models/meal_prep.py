@@ -33,6 +33,12 @@ class MealPrep(Base):
         nullable=False,
     )
 
+    servings_discarded: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
     recipe = relationship(
         "Recipe",
         back_populates="meal_preps",
