@@ -125,6 +125,7 @@ class MealPrepResponse(BaseModel):
     recipe_name: str
     prep_date: date
     servings_made: int
+    servings_discarded: int
 
     model_config = {"from_attributes": True}
 
@@ -162,5 +163,6 @@ class AvailableMealPrepResponse(BaseModel):
     recipe_name: str
     prep_date: date
     servings_made: int
+    servings_discarded: int
     servings_allocated: int
     servings_remaining: int

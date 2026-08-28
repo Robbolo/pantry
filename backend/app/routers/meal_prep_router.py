@@ -58,6 +58,7 @@ def create_meal_prep(
         recipe_name=meal_prep.recipe.name,
         prep_date=meal_prep.prep_date,
         servings_made=meal_prep.servings_made,
+        servings_discarded=meal_prep.servings_discarded
     )
 
 
@@ -99,6 +100,7 @@ def get_meal_preps(
             recipe_name=meal_prep.recipe.name,
             prep_date=meal_prep.prep_date,
             servings_made=meal_prep.servings_made,
+            servings_discarded=meal_prep.servings_discarded
         )
         for meal_prep in meal_preps
     ]
@@ -160,6 +162,7 @@ def update_meal_prep(
         recipe_name=meal_prep.recipe.name,
         prep_date=meal_prep.prep_date,
         servings_made=meal_prep.servings_made,
+        servings_discarded=meal_prep.servings_discarded
     )
 
 @router.delete(
@@ -220,6 +223,7 @@ def get_available_meal_preps(
         .having(
             MealPrep.servings_made
             - servings_allocated
+            - MealPrep.servings_discarded
             > 0
         )
         .order_by(
@@ -238,12 +242,73 @@ def get_available_meal_preps(
                 recipe_name=meal_prep.recipe.name,
                 prep_date=meal_prep.prep_date,
                 servings_made=meal_prep.servings_made,
+                servings_discarded=meal_prep.servings_discarded,
                 servings_allocated=allocated,
                 servings_remaining=(
                     meal_prep.servings_made
                     - allocated
+                    - meal_prep.servings_discarded
                 ),
             )
         )
 
     return response
+
+@router.post(
+    "/{meal_prep_id}/discard-remaining",
+    response_model=MealPrepResponse,
+)
+def discard_remaining_servings(
+    meal_prep_id: int,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
+):
+    meal_prep = db.scalar(
+        select(MealPrep).where(
+            MealPrep.id == meal_prep_id,
+            MealPrep.user_id == user_id,
+        )
+    )
+
+    if meal_prep is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Meal prep not found",
+        )
+
+    servings_allocated = db.scalar(
+        select(
+            func.coalesce(
+                func.sum(MealAllocation.servings),
+                0,
+            )
+        ).where(
+            MealAllocation.meal_prep_id == meal_prep_id
+        )
+    )
+
+    servings_remaining = (
+        meal_prep.servings_made
+        - servings_allocated
+        - meal_prep.servings_discarded
+    )
+
+    if servings_remaining <= 0:
+        raise HTTPException(
+            status_code=400,
+            detail="No servings remaining to discard",
+        )
+
+    meal_prep.servings_discarded += servings_remaining
+
+    db.commit()
+    db.refresh(meal_prep)
+
+    return MealPrepResponse(
+        id=meal_prep.id,
+        recipe_id=meal_prep.recipe_id,
+        recipe_name=meal_prep.recipe.name,
+        prep_date=meal_prep.prep_date,
+        servings_made=meal_prep.servings_made,
+        servings_discarded=meal_prep.servings_discarded,
+    )
