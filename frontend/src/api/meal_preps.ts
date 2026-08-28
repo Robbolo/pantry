@@ -82,3 +82,16 @@ export async function deleteMealPrep(
         },
     );
 }
+
+export async function discardRemainingMealPrep(
+    mealPrepId: number,
+): Promise<MealPrep> {
+    const response = await apiFetch(
+        `/meal-preps/${mealPrepId}/discard-remaining`,
+        {
+            method: "POST",
+        },
+    );
+
+    return response.json();
+}

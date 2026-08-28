@@ -32,6 +32,14 @@ import MealPlannerCalendar
 import MealPrepPanel
     from "../components/meal_planner/MealPrepPanel";
 
+import {
+    getRecipes,
+} from "../api/recipes";
+
+import type {
+    Recipe,
+} from "../types/recipe";
+
 
 function MealPlannerPage() {
     const [viewMode, setViewMode] =
@@ -56,12 +64,16 @@ function MealPlannerPage() {
         endDate,
     } = getPlannerDateRange(viewMode);
 
+    const [recipes, setRecipes] =
+        useState<Recipe[]>([]);
+
 
     async function loadPlannerData() {
         const [
             prepData,
             availablePrepData,
             allocationData,
+            recipeData
         ] = await Promise.all([
             getMealPreps(
                 startDate,
@@ -72,6 +84,7 @@ function MealPlannerPage() {
                 startDate,
                 endDate,
             ),
+            getRecipes(),
         ]);
 
         setMealPreps(prepData);
@@ -82,6 +95,10 @@ function MealPlannerPage() {
 
         setMealAllocations(
             allocationData,
+        );
+
+        setRecipes(
+            recipeData,
         );
     }
 
@@ -118,6 +135,8 @@ function MealPlannerPage() {
 
             <MealPrepPanel
                 availableMealPreps={availableMealPreps}
+                onMealPrepChanged={loadPlannerData}
+                recipes={recipes}
             />
 
             <div>
