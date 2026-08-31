@@ -151,6 +151,7 @@ class MealAllocationUpdate(BaseModel):
 class MealAllocationResponse(BaseModel):
     id: int
     meal_prep_id: int
+    recipe_name: str
     meal_date: date
     meal_type: MealType
     servings: int

@@ -109,7 +109,17 @@ def get_meal_allocations(
         )
     ).all()
 
-    return allocations
+    return [
+        MealAllocationResponse(
+            id=allocation.id,
+            meal_prep_id=allocation.meal_prep_id,
+            recipe_name=allocation.meal_prep.recipe.name,
+            meal_date=allocation.meal_date,
+            meal_type=allocation.meal_type,
+            servings=allocation.servings,
+        )
+        for allocation in allocations
+    ]
 
 @router.put(
     "/{meal_allocation_id}",
