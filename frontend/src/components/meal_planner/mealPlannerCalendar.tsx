@@ -102,10 +102,15 @@ function MealPlannerCalendar({
     );
 
     return (
-        <div>
+        <div
+            style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(7, 1fr)",
+                gap: "8px",
+            }}>
             {dates.map((date) => {
                 const dateString = formatDate(date);
-                
+
                 const prepsForDay = mealPreps.filter(
                     (prep) =>
                         prep.prep_date === dateString,
@@ -124,7 +129,7 @@ function MealPlannerCalendar({
                         mealPreps={prepsForDay}
                         mealAllocations={allocationsForDay}
                         isCurrentDay={isToday(date)}
-                        onDayClick={() => {}}
+                        onDayClick={onDayClick}
                     />
                 );
             })}
