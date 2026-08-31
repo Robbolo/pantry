@@ -20,7 +20,6 @@ function PlannerDay({
     isCurrentDay,
     onDayClick,
 }: Props) {
-
     return (
         <div
             onClick={() => onDayClick(dateString)}
@@ -70,6 +69,8 @@ function PlannerDay({
                     }}
                 >
                     {allocation.meal_type}
+                    {": "}
+                    {allocation.recipe_name}
                     {" — "}
                     {allocation.servings}
                     {" servings"}

@@ -105,6 +105,7 @@ function MealPlannerCalendar({
         <div>
             {dates.map((date) => {
                 const dateString = formatDate(date);
+                
                 const prepsForDay = mealPreps.filter(
                     (prep) =>
                         prep.prep_date === dateString,
