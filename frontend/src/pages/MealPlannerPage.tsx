@@ -29,8 +29,8 @@ import {
 import MealPlannerCalendar
     from "../components/meal_planner/mealPlannerCalendar";
 
-import MealPrepPanel
-    from "../components/meal_planner/MealPrepPanel";
+// import MealPrepPanel
+//     from "../components/meal_planner/MealPrepPanel";
 
 import {
     getRecipes,
@@ -58,6 +58,8 @@ function MealPlannerPage() {
         setMealAllocations,
     ] = useState<MealAllocation[]>([]);
 
+    // const [selectedDate, setSelectedDate] =
+    //     useState<string | null>(null);
 
     const {
         startDate,
@@ -70,11 +72,12 @@ function MealPlannerPage() {
 
     async function loadPlannerData() {
         const [
+            recipeData,
             prepData,
             availablePrepData,
             allocationData,
-            recipeData
         ] = await Promise.all([
+            getRecipes(),
             getMealPreps(
                 startDate,
                 endDate,
@@ -84,23 +87,52 @@ function MealPlannerPage() {
                 startDate,
                 endDate,
             ),
-            getRecipes(),
         ]);
 
+        setRecipes(recipeData);
         setMealPreps(prepData);
-
         setAvailableMealPreps(
             availablePrepData,
         );
-
         setMealAllocations(
             allocationData,
         );
-
-        setRecipes(
-            recipeData,
-        );
     }
+
+
+    // async function loadPlannerData() {
+    //     const [
+    //         prepData,
+    //         availablePrepData,
+    //         allocationData,
+    //         recipeData
+    //     ] = await Promise.all([
+    //         getMealPreps(
+    //             startDate,
+    //             endDate,
+    //         ),
+    //         getAvailableMealPreps(),
+    //         getMealAllocations(
+    //             startDate,
+    //             endDate,
+    //         ),
+    //         getRecipes(),
+    //     ]);
+
+    //     setMealPreps(prepData);
+
+    //     setAvailableMealPreps(
+    //         availablePrepData,
+    //     );
+
+    //     setMealAllocations(
+    //         allocationData,
+    //     );
+
+    //     setRecipes(
+    //         recipeData,
+    //     );
+    // }
 
 
     useEffect(() => {
@@ -112,53 +144,95 @@ function MealPlannerPage() {
 
 
     return (
-        <div>
-            <h1>Meal Planner</h1>
-
-            <PlannerViewControls
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-            />
-
-            <p>
-                {startDate}
-                {" to "}
-                {endDate}
-            </p>
-
-            <MealPlannerCalendar
-                startDate={startDate}
-                endDate={endDate}
-                mealPreps={mealPreps}
-                mealAllocations={mealAllocations}
-            />
-
-            <MealPrepPanel
-                availableMealPreps={availableMealPreps}
-                onMealPrepChanged={loadPlannerData}
-                recipes={recipes}
-            />
 
             <div>
-                <p>
-                    Visible meal preps:
-                    {" "}
-                    {mealPreps.length}
-                </p>
+        <h1>Meal Planner</h1>
 
-                <p>
-                    Available meal preps:
-                    {" "}
-                    {availableMealPreps.length}
-                </p>
+        <PlannerViewControls
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+        />
 
-                <p>
-                    Visible meal allocations:
-                    {" "}
-                    {mealAllocations.length}
-                </p>
-            </div>
-        </div>
+      <p>
+    Recipes loaded: {recipes.length}
+</p>
+
+<p>
+    Meal preps loaded: {mealPreps.length}
+</p>
+<p>
+    Available meal preps loaded:
+    {" "}
+    {availableMealPreps.length}
+</p>
+<p>
+    Meal allocations loaded:
+    {" "}
+    {mealAllocations.length}
+</p>
+<div>
+    <MealPlannerCalendar
+        startDate={startDate}
+        endDate={endDate}
+        mealPreps={mealPreps}
+        mealAllocations={mealAllocations}
+        onDayClick={() => {}}
+    />
+</div>
+    </div>
+        // <div>
+        //     <h1>Meal Planner</h1>
+
+        //     <PlannerViewControls
+        //         viewMode={viewMode}
+        //         onViewModeChange={setViewMode}
+        //     />
+
+        //     <p>
+        //         {startDate}
+        //         {" to "}
+        //         {endDate}
+        //     </p>
+
+        //     <MealPlannerCalendar
+        //         startDate={startDate}
+        //         endDate={endDate}
+        //         mealPreps={mealPreps}
+        //         mealAllocations={mealAllocations}
+        //         onDayClick={setSelectedDate}
+        //     />
+        //     {selectedDate && (
+        //         <p>
+        //             Selected date: {selectedDate}
+        //         </p>
+        //     )}
+
+        //     <MealPrepPanel
+        //         availableMealPreps={availableMealPreps}
+        //         onMealPrepChanged={loadPlannerData}
+        //         recipes={recipes}
+        //     />
+
+        //     <div>
+        //         <p>
+        //             Visible meal preps:
+        //             {" "}
+        //             {mealPreps.length}
+        //         </p>
+
+        //         <p>
+        //             Available meal preps:
+        //             {" "}
+        //             {availableMealPreps.length}
+        //         </p>
+
+        //         <p>
+        //             Visible meal allocations:
+        //             {" "}
+        //             {mealAllocations.length}
+        //         </p>
+        //     </div>
+        // </div>
     );
 }
 
